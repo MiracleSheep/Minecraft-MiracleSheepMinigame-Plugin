@@ -1,0 +1,18 @@
+# Enter the name of the plugin here
+name: MinigamePlugin
+# This is the version of your plugin
+version: 1.0
+# This is the author of your plugin
+author: MiracleSheep
+# This is the main script of your plugin: the one that extends javaplugin
+main: com.MiracleSheep.MinigamePlugin.MinigamePlugin
+# This is the spigot api version of your plugin. apparently, this dosent matter very much as of 1.15.2 so you can leave it as it is
+api-version: 1.14
+# These are for commands that the plugin adds. Enter the name, description, usage and aliases
+commands:
+  minigame:
+    description: Brings up the menu for a minigame
+    usage: /<command>
+    aliases: [playgame]
+
+
