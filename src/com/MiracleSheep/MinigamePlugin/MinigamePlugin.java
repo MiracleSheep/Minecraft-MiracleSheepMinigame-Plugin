@@ -11,8 +11,9 @@ package com.MiracleSheep.MinigamePlugin;
 
 //importing from other packages and libraries
 import com.MiracleSheep.MinigamePlugin.Commands.PluginCommands;
-import com.MiracleSheep.MinigamePlugin.Events.PluginEvents;
-import com.MiracleSheep.MinigamePlugin.Inventory.PluginInventory;
+import com.MiracleSheep.MinigamePlugin.Listeners.BlockHuntListener;
+import com.MiracleSheep.MinigamePlugin.Listeners.GameStart;
+import com.MiracleSheep.MinigamePlugin.Inventory.MainMenu;
 import com.MiracleSheep.MinigamePlugin.Items.ItemManager;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -24,7 +25,10 @@ public class MinigamePlugin extends JavaPlugin {
     //creating an object that creates items. This is optional
     public ItemManager i = new ItemManager(this);
     //This is a optional object in case the plugin requires an inventory
-    public static PluginInventory inventory;
+    public static MainMenu inventory;
+
+    //This is a integer that holds the the game being played
+    private static int Game = 0;
 
     //code that gets run when the plugin is enabled
     @Override
@@ -41,9 +45,14 @@ public class MinigamePlugin extends JavaPlugin {
             ItemManager i = new ItemManager(this);
             ItemManager.init();
             //This registers events for the plugin by called the event class
-            getServer().getPluginManager().registerEvents(new PluginEvents(this, inventory), this);
+            getServer().getPluginManager().registerEvents(new GameStart(this, inventory), this);
+            getServer().getPluginManager().registerEvents(new BlockHuntListener(this), this);
             //Use this line as a template for when adding a new command. It adds the command to the plugin Simply copy paste the line and replace test with what the user needs to type in
-            getCommand("test").setExecutor(command);
+            getCommand("minigame").setExecutor(command);
+            getCommand("quit").setExecutor(command);
+            getCommand("join").setExecutor(command);
+            getCommand("start").setExecutor(command);
+            getCommand("cancel").setExecutor(command);
             //Sending a message to show the plugin is enabled
             getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[PluginTemplate] plugin is enabled.");
 
@@ -54,6 +63,16 @@ public class MinigamePlugin extends JavaPlugin {
     @Override
     public void onDisable() {
 
+    }
+
+    //function that sets game
+    public void setGame(int intGame) {
+        Game = intGame;
+    }
+
+    //function that gets game
+    public int getGame() {
+        return Game;
     }
 
 }

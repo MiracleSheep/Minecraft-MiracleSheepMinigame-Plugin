@@ -14,5 +14,23 @@ commands:
     description: Brings up the menu for a minigame
     usage: /<command>
     aliases: [playgame]
+  join:
+    description: joins a player to the minigame
+    usage: /<command>
+    aliases: []
+  quit:
+    description: quits a player from the minigame
+    usage: /<command>
+    aliases: [leave]
+  start:
+    description: starts the minigame
+    usage: /<command>
+    aliases: [begin]
+  cancel:
+    description: cancels the minigame
+    usage: /<command>
+    aliases: [ stopminigame ]
+
+
 
 
