@@ -6,8 +6,8 @@
 
 package com.MiracleSheep.MinigamePlugin.Games;
 
-public enum BlockHuntState {
+public enum GameState {
 
-    INACTIVE,WAITING, ROLES, STARTING, ACTIVE, WON;
+    INACTIVE,WAITING, STARTING, ACTIVE, WON;
 
 }

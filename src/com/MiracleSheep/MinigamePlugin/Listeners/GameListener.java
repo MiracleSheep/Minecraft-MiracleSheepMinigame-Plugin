@@ -11,8 +11,7 @@
 package com.MiracleSheep.MinigamePlugin.Listeners;
 
 //importing libraries and packages
-import com.MiracleSheep.MinigamePlugin.Games.BlockHuntManager;
-import com.MiracleSheep.MinigamePlugin.Games.BlockHuntState;
+import com.MiracleSheep.MinigamePlugin.Games.*;
 import com.MiracleSheep.MinigamePlugin.Inventory.MainMenu;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
 import org.bukkit.ChatColor;
@@ -21,9 +20,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 //this is the class that listens for events
-public class GameStart implements Listener {
+public class GameListener implements Listener {
 
     //getting an instance of the main class
     public MinigamePlugin main;
@@ -31,9 +31,25 @@ public class GameStart implements Listener {
     public static MainMenu inventory;
 
     //This is the constructor for the events class. it passes the inventory (optionnal) and main classes
-    public GameStart(MinigamePlugin main, MainMenu m) {
+    public GameListener(MinigamePlugin main, MainMenu m) {
         this.main = main;
         this.inventory = m;
+
+    }
+
+    //This is the event that detects when somebody disconnects
+    @EventHandler
+    public void onPlayerDisconnect(PlayerQuitEvent e) {
+
+        GameManager manager = new GameManager(main);
+
+        //getting the player who disconnected
+        Player player = (Player) e.getPlayer();
+
+        //checking if the player is in the lobby
+        if (manager.players.contains(player)) {
+            manager.playerDisc(player);
+        }
 
     }
 
@@ -42,7 +58,9 @@ public class GameStart implements Listener {
     @EventHandler
     public void onClick(InventoryClickEvent e) {
 
-        BlockHuntManager blockHuntManager = new BlockHuntManager(main);
+        BlockHunt blockhunt  = new BlockHunt(main);
+        ManHunt manhunt = new ManHunt(main);
+        ManSwap manswap = new ManSwap(main);
 
         //This checks if the click was in an inventory
         if (e.getClickedInventory() == null) { return; }
@@ -52,7 +70,7 @@ public class GameStart implements Listener {
         }
         Player player = (Player) e.getWhoClicked();
 
-        if (main.getGame() != 0) {
+        if (manhunt.getGame() != 0) {
             player.closeInventory();
             player.sendMessage(ChatColor.GREEN + "There is currently an ongoing game.");
             player.sendMessage(ChatColor.GREEN + "Please wait for it to finish before starting a new one.");
@@ -69,19 +87,25 @@ public class GameStart implements Listener {
             //outputting the choice to the player
             player.sendMessage(ChatColor.GREEN + "Selecting Block Hunt!");
             player.sendMessage(ChatColor.GREEN + "Searching for players...");
-            blockHuntManager.setStartPlayer(player);
-            blockHuntManager.setState(BlockHuntState.WAITING);
+            blockhunt.setStartPlayer(player);
+            blockhunt.setState(GameState.WAITING);
             //Calling the block hunt class to start the game
             player.closeInventory();
 
         }  else if (e.getCurrentItem().getType() == Material.COMPASS) {
             //outputting the choice to the player
             player.sendMessage(ChatColor.GREEN + "Selecting Manhunt!");
+            player.sendMessage(ChatColor.GREEN + "Searching for players...");
             player.closeInventory();
+            manhunt.setStartPlayer(player);
+            manhunt.setState(GameState.WAITING);
         } else if (e.getCurrentItem().getType() == Material.LAVA_BUCKET) {
             //outputting the choice to the player
             player.sendMessage(ChatColor.GREEN + "Selecting Man Swap!");
+            player.sendMessage(ChatColor.GREEN + "Searching for players...");
             player.closeInventory();
+            manswap.setStartPlayer(player);
+            manswap.setState(GameState.WAITING);
         }  else if (e.getCurrentItem().getType() == Material.BARRIER) {
             //outputting the choice to the player
             player.sendMessage(ChatColor.GREEN + "Closed menu.");

@@ -12,7 +12,7 @@ package com.MiracleSheep.MinigamePlugin;
 //importing from other packages and libraries
 import com.MiracleSheep.MinigamePlugin.Commands.PluginCommands;
 import com.MiracleSheep.MinigamePlugin.Listeners.BlockHuntListener;
-import com.MiracleSheep.MinigamePlugin.Listeners.GameStart;
+import com.MiracleSheep.MinigamePlugin.Listeners.GameListener;
 import com.MiracleSheep.MinigamePlugin.Inventory.MainMenu;
 import com.MiracleSheep.MinigamePlugin.Items.ItemManager;
 import org.bukkit.ChatColor;
@@ -26,9 +26,6 @@ public class MinigamePlugin extends JavaPlugin {
     public ItemManager i = new ItemManager(this);
     //This is a optional object in case the plugin requires an inventory
     public static MainMenu inventory;
-
-    //This is a integer that holds the the game being played
-    private static int Game = 0;
 
     //code that gets run when the plugin is enabled
     @Override
@@ -45,7 +42,7 @@ public class MinigamePlugin extends JavaPlugin {
             ItemManager i = new ItemManager(this);
             ItemManager.init();
             //This registers events for the plugin by called the event class
-            getServer().getPluginManager().registerEvents(new GameStart(this, inventory), this);
+            getServer().getPluginManager().registerEvents(new GameListener(this, inventory), this);
             getServer().getPluginManager().registerEvents(new BlockHuntListener(this), this);
             //Use this line as a template for when adding a new command. It adds the command to the plugin Simply copy paste the line and replace test with what the user needs to type in
             getCommand("minigame").setExecutor(command);
@@ -65,15 +62,7 @@ public class MinigamePlugin extends JavaPlugin {
 
     }
 
-    //function that sets game
-    public void setGame(int intGame) {
-        Game = intGame;
-    }
 
-    //function that gets game
-    public int getGame() {
-        return Game;
-    }
 
 }
 

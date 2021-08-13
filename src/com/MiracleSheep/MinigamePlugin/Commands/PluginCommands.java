@@ -10,8 +10,8 @@
 package com.MiracleSheep.MinigamePlugin.Commands;
 
 //importing libraries and other packages
-import com.MiracleSheep.MinigamePlugin.Games.BlockHuntManager;
-import com.MiracleSheep.MinigamePlugin.Games.BlockHuntState;
+import com.MiracleSheep.MinigamePlugin.Games.GameManager;
+import com.MiracleSheep.MinigamePlugin.Games.GameState;
 import com.MiracleSheep.MinigamePlugin.Inventory.MainMenu;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
 import org.bukkit.Bukkit;
@@ -24,7 +24,7 @@ import org.bukkit.entity.Player;
 //this is the class that contains the command of the plugin
 public class PluginCommands implements CommandExecutor {
 
-    //creating an intsance of the main plugin class
+    //creating an instsance of the main plugin class
     private final MinigamePlugin main;
 
 
@@ -39,7 +39,7 @@ public class PluginCommands implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-        BlockHuntManager blockHuntManager = new BlockHuntManager(main);
+        GameManager manager = new GameManager(main);
 
         //Checking if the sender of the command is not a player and returning if true
         if (!(sender instanceof Player)) {
@@ -66,24 +66,24 @@ public class PluginCommands implements CommandExecutor {
             //Getting the sender of the command
             Player player = (Player) sender;
 
-            if (player == blockHuntManager.getStartPlayer()) {
+            if (player == manager.getStartPlayer()) {
                 player.sendMessage(ChatColor.GREEN + "You are the host of this game! There is no need to join it.");
             } else {
 
 
-            if (main.getGame() != 0) {
+            if (manager.getGame() != 0) {
 
 
 
-            if (!blockHuntManager.players.contains(player)) {
+            if (!manager.players.contains(player)) {
 
 
-                if (main.getGame() == 1 && blockHuntManager.getBlockHuntState() == BlockHuntState.WAITING) {
+                if (manager.getGame() != 0 && manager.getGameState() == GameState.WAITING) {
                     player.sendMessage(ChatColor.GREEN + "Joining you to the game...");
-                    blockHuntManager.addPlayer(player);
-                } else if (main.getGame() != 0) {
+                    manager.addPlayer(player);
+                } else if ( manager.getGameState() != GameState.WAITING) {
                     player.sendMessage(ChatColor.RED + "The game is currently in progress and cannot be joined!");
-                } else if (main.getGame() == 0) {
+                } else if (manager.getGame() == 0) {
                     player.sendMessage(ChatColor.RED + "There is no game currently active.");
                 }
             } else {
@@ -104,14 +104,12 @@ public class PluginCommands implements CommandExecutor {
             //Getting the sender of the command
             Player player = (Player) sender;
 
-            if (blockHuntManager.players.contains(player)) {
+            if (manager.players.contains(player)) {
 
-                if (main.getGame() == 1 && blockHuntManager.getBlockHuntState() == BlockHuntState.WAITING) {
-                    player.sendMessage(ChatColor.GREEN + "Leaving Block Hunt...");
-                    blockHuntManager.playerQuit(player);
-                } else if (main.getGame() != 0) {
-                    player.sendMessage(ChatColor.RED + "The game is currently in progress and cannot be joined!");
-                } else if (main.getGame() == 0) {
+                if (manager.getGame() != 0) {
+                    player.sendMessage(ChatColor.GREEN + "Leaving " + manager.getName() + "...");
+                    manager.playerQuit(player);
+                } else if (manager.getGame() == 0) {
                     player.sendMessage(ChatColor.RED + "There is no game currently active.");
                 }
 
@@ -129,23 +127,23 @@ public class PluginCommands implements CommandExecutor {
             //Getting the sender of the command
             Player player = (Player) sender;
 
-            if (main.getGame() != 0) {
+            if (manager.getGame() != 0) {
 
 
-                if (player == blockHuntManager.getStartPlayer()) {
+                if (player == manager.getStartPlayer()) {
 
-                    if (blockHuntManager.players.size() >= 2) {
+                    if (manager.players.size() >= 2) {
 
 
 
-                    if (blockHuntManager.players.contains(player)) {
+                    if (manager.players.contains(player)) {
 
-                        if (main.getGame() == 1 && blockHuntManager.getBlockHuntState() == BlockHuntState.WAITING) {
-                            player.sendMessage(ChatColor.GREEN + "Starting Block Hunt...");
-                            blockHuntManager.setState(BlockHuntState.STARTING);
-                        } else if (main.getGame() != 0) {
-                            player.sendMessage(ChatColor.RED + "The game is currently in progress and cannot be started!");
-                        } else if (main.getGame() == 0) {
+                        if (manager.getGame() != 0 && manager.getGameState() == GameState.WAITING) {
+                            player.sendMessage(ChatColor.GREEN + "Starting " + manager.getName() + "...");
+                            manager.setState(GameState.STARTING);
+                        } else if (manager.getGameState() != GameState.WAITING) {
+                            player.sendMessage(ChatColor.RED + "The current game has already been started!");
+                        } else {
                             player.sendMessage(ChatColor.RED + "There is no game currently active.");
                         }
 
@@ -174,23 +172,21 @@ public class PluginCommands implements CommandExecutor {
             //Getting the sender of the command
             Player player = (Player) sender;
 
-            if (main.getGame() != 0) {
+            if (manager.getGame() != 0) {
 
 
 
-            if (blockHuntManager.players.contains(player)) {
+            if (manager.players.contains(player)) {
 
-                if (player == blockHuntManager.getStartPlayer()) {
+                if (player == manager.getStartPlayer()) {
 
 
 
-                if (main.getGame() == 1) {
-                    player.sendMessage(ChatColor.GREEN + "Cancelling the Block Hunt...");
-                    Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + blockHuntManager.getStartPlayer().getDisplayName() + " has canceled the Block Hunt!");
-                    blockHuntManager.cleanup();
-                } else if (main.getGame() != 0) {
-                    player.sendMessage(ChatColor.RED + "The game is currently in progress and cannot be joined!");
-                } else if (main.getGame() == 0) {
+                if (manager.getGame() != 0) {
+                    player.sendMessage(ChatColor.GREEN + "Cancelling " + manager.getName() + "...");
+                    Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + manager.getStartPlayer().getDisplayName() + " has canceled the " + manager.getName() + "!");
+                    manager.setState(GameState.INACTIVE);
+                } else if (manager.getGame() == 0) {
                     player.sendMessage(ChatColor.RED + "There is no game currently active.");
                 }
                 } else {
