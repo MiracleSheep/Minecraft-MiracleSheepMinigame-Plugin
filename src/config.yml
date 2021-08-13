@@ -1,2 +1,21 @@
 #This controls whether or not you want the plugin to be enabled
 Enabled: true
+
+#This controls the items used by the block hunt minigame.
+#By default it uses items from 1.17, but you can change the items to make it compatible with earlier versions of minecraft
+BlocksRolled:
+  Easy:
+  Medium:
+  Hard:
+
+
+#This controls the difficulty of the game block hunt. The number demonstrates how many times block hunt will roll until it switches to a higher difficulty
+BlockHuntDifficulty: 10
+
+#This controls how long the players will have to find their assigned block. The unit used is seconds
+BlockHuntTime: 300
+
+#This controls whether or not the timer will finish even all players have gotten their blocks,
+# or if it will keep going until the end of the timer
+#True means players can end the timer prematurely
+PlayersCanFinishTimer: true

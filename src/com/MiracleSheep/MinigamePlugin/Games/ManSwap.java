@@ -50,11 +50,18 @@ public class ManSwap extends GameManager {
 
     }
 
+    //function that gets called when the state is transition
+    @Override
+    public void onTransition() {
+
+    }
+
     //function that gets called when the state is won
     @Override
     public void onWon() {
 
     }
+
 
 
 

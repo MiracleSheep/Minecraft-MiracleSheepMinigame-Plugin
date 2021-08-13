@@ -109,6 +109,7 @@ public class PluginCommands implements CommandExecutor {
                 if (manager.getGame() != 0) {
                     player.sendMessage(ChatColor.GREEN + "Leaving " + manager.getName() + "...");
                     manager.playerQuit(player);
+
                 } else if (manager.getGame() == 0) {
                     player.sendMessage(ChatColor.RED + "There is no game currently active.");
                 }

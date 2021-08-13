@@ -7,6 +7,7 @@
 package com.MiracleSheep.MinigamePlugin.Games;
 
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
+import com.MiracleSheep.MinigamePlugin.Tasks.RollBlocks;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -17,6 +18,9 @@ public class GameManager {
 
     //Getting an instance of the main class
     private final MinigamePlugin main;
+
+    //Creating an instance of blockroll
+    public RollBlocks roll;
 
     //creating a list of players
     public static ArrayList<Player> players = new ArrayList<Player>();
@@ -65,6 +69,9 @@ public class GameManager {
             case ACTIVE:
                 onActive();
                 break;
+            case TRANSITION:
+                onTransition();
+                break;
             case WON:
                 onWon();
                 break;
@@ -109,10 +116,16 @@ public class GameManager {
 
     }
 
+    //function that gets called when the state is transition
+    public void onTransition() {
+
+    }
+
     //function that gets called when the state is won
     public void onWon() {
 
     }
+
 
     //cleanup function which cleans up variables that are the same between al games
     public void cleanup() {

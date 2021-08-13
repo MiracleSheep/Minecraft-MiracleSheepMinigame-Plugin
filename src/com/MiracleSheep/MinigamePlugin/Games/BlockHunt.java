@@ -10,6 +10,7 @@ package com.MiracleSheep.MinigamePlugin.Games;
 
 //importing librairies and otherwise
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
+import com.MiracleSheep.MinigamePlugin.Tasks.RollBlocks;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -24,11 +25,24 @@ public class BlockHunt extends GameManager {
         super(main);
     }
 
+    //This is an array that will hold the easy blocks
+    public static String[] easyBlocks;
+
+    //This is an array that will hold the medium blocks
+    public static String[] mediumBlocks;
+
+    //This is an array that will hold the hard blocks
+    public static String[] hardBlocks;
+
+    //This is the difficulty
+    private int difficulty;
+
 
     //function that gets called when the state is inactive - works as a unique clanup functiuon
     @Override
     public void onInactive() {
-
+        roll.stopTimer();
+        roll.reset();
     }
 
     //function that gets called when the state is waiting
@@ -44,11 +58,36 @@ public class BlockHunt extends GameManager {
     @Override
     public void onStarting() {
 
+
+        for (int i = 0; i < getMain().getConfig().getStringList("BlocksRolled" + ".Easy").size(); i++) {
+            easyBlocks[i] = getMain().getConfig().getStringList("BlocksRolled" + ".Easy").get(i);
+        }
+
+        for (int i = 0; i < getMain().getConfig().getStringList("BlocksRolled" + ".Medium").size(); i++) {
+            mediumBlocks[i] = getMain().getConfig().getStringList("BlocksRolled" + ".Medium").get(i);
+        }
+
+        for (int i = 0; i < getMain().getConfig().getStringList("BlocksRolled" + ".Hard").size(); i++) {
+            hardBlocks[i] = getMain().getConfig().getStringList("BlocksRolled" + ".Hard").get(i);
+        }
+
+        difficulty = getMain().getConfig().getInt("BlockHuntDifficulty");
+
+        setState(GameState.ACTIVE);
+
+
     }
 
     //function that gets called when the state is active
     @Override
     public void onActive() {
+
+
+    }
+
+    //function that gets called when the state is active
+    @Override
+    public void onTransition() {
 
     }
 

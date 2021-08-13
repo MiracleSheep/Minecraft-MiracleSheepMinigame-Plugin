@@ -8,6 +8,6 @@ package com.MiracleSheep.MinigamePlugin.Games;
 
 public enum GameState {
 
-    INACTIVE,WAITING, STARTING, ACTIVE, WON;
+    INACTIVE,WAITING, STARTING, ACTIVE, WON, TRANSITION;
 
 }
