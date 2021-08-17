@@ -67,7 +67,7 @@ public class GameListener implements Listener {
         //Checking if clicked in the selection screen
         if (e.getClickedInventory().getHolder() instanceof MainMenu) {
             e.setCancelled(true);
-        }
+
         Player player = (Player) e.getWhoClicked();
 
         if (manhunt.getGame() != 0) {
@@ -115,6 +115,7 @@ public class GameListener implements Listener {
         }
 
         }
+    }
 
 
     }
