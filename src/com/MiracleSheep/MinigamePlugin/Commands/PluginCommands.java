@@ -110,8 +110,13 @@ public class PluginCommands implements CommandExecutor {
 
                 if (manager.getGame() != 0) {
                     player.sendMessage(ChatColor.GREEN + "Leaving " + manager.getName() + "...");
-                    manager.playerQuit(player);
-
+                    if (manager.getGame() == 1) {
+                        blockhunt.playerQuit(player);
+                    } else if (manager.getGame() == 2) {
+                        manhunt.playerQuit(player);
+                    } else if (manager.getGame() == 3) {
+                        manswap.playerQuit(player);
+                    }
                 } else if (manager.getGame() == 0) {
                     player.sendMessage(ChatColor.RED + "There is no game currently active.");
                 }
@@ -194,8 +199,14 @@ public class PluginCommands implements CommandExecutor {
 
                 if (manager.getGame() != 0) {
                     player.sendMessage(ChatColor.GREEN + "Cancelling " + manager.getName() + "...");
-                    Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + manager.getStartPlayer().getDisplayName() + " has canceled the " + manager.getName() + "!");
-                    manager.setState(GameState.INACTIVE);
+                    Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + manager.getStartPlayer().getDisplayName() + " has canceled " + manager.getName() + "!");
+                    if (manager.getGame() == 1) {
+                        blockhunt.setState(GameState.INACTIVE);
+                    } else if (manager.getGame() == 2) {
+                        manhunt.setState(GameState.INACTIVE);
+                    } else if (manager.getGame() == 3) {
+                        manswap.setState(GameState.INACTIVE);
+                    }
                 } else if (manager.getGame() == 0) {
                     player.sendMessage(ChatColor.RED + "There is no game currently active.");
                 }
@@ -212,6 +223,31 @@ public class PluginCommands implements CommandExecutor {
 
 
         }
+
+        //This is a command that lets people change their role to different games
+        if (cmd.getName().equalsIgnoreCase("hunter")) {
+
+            //Getting the sender of the command
+            Player player = (Player) sender;
+
+            if (manhunt.getGame() == 2) {
+
+                if (manhunt.players.contains(player)) {
+
+
+                } else {
+                    player.sendMessage(ChatColor.RED + "You are not in a game!");
+                }
+
+            } else {
+                player.sendMessage(ChatColor.RED + "There is no manhunt game being played!");
+            }
+
+
+
+
+        }
+
 
 
 

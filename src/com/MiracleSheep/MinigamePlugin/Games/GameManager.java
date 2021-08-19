@@ -216,9 +216,7 @@ public class GameManager {
     public void playerElim(Player player) {
 
         players.remove(player);
-        Bukkit.broadcastMessage(ChatColor.GOLD + player.getDisplayName() + " has been eliminated from " + getName() + "!");
-
-        isWon();
+        //Bukkit.broadcastMessage(ChatColor.GOLD + player.getDisplayName() + " has been eliminated from " + getName() + "!");
 
 
     }

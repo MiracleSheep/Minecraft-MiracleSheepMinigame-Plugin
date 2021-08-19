@@ -45,7 +45,7 @@ public class BlockHunt extends GameManager {
 
     //integers for the timer
     int time;
-    int taskID;
+    public static int taskID;
 
 
     //passing the instance of the main class
@@ -67,7 +67,7 @@ public class BlockHunt extends GameManager {
                 setGame(1);
                 players.add(getStartPlayer());
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + getStartPlayer().getDisplayName() + " has started a game of " + getName() + "!");
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Anyone who wants to play should enter the command /join!");
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: To play, do /join!");
 
     }
 
@@ -75,6 +75,11 @@ public class BlockHunt extends GameManager {
     @Override
     public void onStarting() {
          start();
+
+         for (int i = 0 ; i < players.size() ; i++) {
+             players.get(i).setHealth(20);
+             players.get(i).setFoodLevel(10);
+         }
          setState(GameState.ACTIVE);
 
 
@@ -205,32 +210,34 @@ public class BlockHunt extends GameManager {
 
                 }
 
-                if(time == 0) {
-                    Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "Time is up!");
 
-                    for (int j = 0 ; j < playerlist.size() ; j++) {
-                        Bukkit.broadcastMessage(ChatColor.GOLD + "" + playerlist.get(j).player.getDisplayName() + "failed to find the block " + playerlist.get(j).block + "in time!");
-                        playerElim(playerlist.get(j).player);
-                    }
-                        isWon();
-                        return;
-                }
 
                 if (time == 30) {
                     Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "30 seconds remaining!");
                 }
 
-                if (time < 10) {
-                    if (time == 9) {
-                        Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "Timer ends in " + (time + 1) + "...");
+                if (time < 11) {
+                    if (time == 10 && time > 0) {
+                        Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "Timer ends in " + (time) + "...");
                     } else {
-                        Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "" + (time + 1) + "...");
+                        Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "" + (time) + "...");
                     }
 
                 }
 
                 if(time == fulltime / 2) {
                     Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "" + time + " seconds remaining!");
+                }
+
+                if(time == 0) {
+                    Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "Time is up!");
+
+                    for (int j = 0 ; j < playerlist.size() ; j++) {
+                        Bukkit.broadcastMessage(ChatColor.GOLD + "" + playerlist.get(j).player.getDisplayName() + " failed to find the block " + playerlist.get(j).block + " in time!");
+                        playerElim(playerlist.get(j).player);
+                    }
+                        isWon();
+                    return;
                 }
 
 
@@ -251,6 +258,11 @@ public class BlockHunt extends GameManager {
 
         if (restart) {
             setState(GameState.STARTING);
+        } else {
+            for (int i = 0 ; i < players.size() ; i++) {
+                players.get(i).setHealth(20);
+                players.get(i).setFoodLevel(10);
+            }
         }
     }
 
@@ -267,12 +279,11 @@ public class BlockHunt extends GameManager {
 
         if (players.size() == 1) {
 
-            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: There is only one player remaining");
             Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + players.get(0).getDisplayName() + " Wins the game!");
             setState(GameState.INACTIVE);
 
         } else if (players.size() == 0) {
-            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Everybody was eliminated from " + getName() + "!");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Everybody was eliminated this round!");
             Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Nobody wins!");
             setState(GameState.INACTIVE);
         }

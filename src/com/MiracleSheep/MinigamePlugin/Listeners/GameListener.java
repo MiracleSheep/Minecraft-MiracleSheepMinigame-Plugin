@@ -41,6 +41,9 @@ public class GameListener implements Listener {
     @EventHandler
     public void onPlayerDisconnect(PlayerQuitEvent e) {
 
+        BlockHunt blockhunt  = new BlockHunt(main);
+        ManHunt manhunt = new ManHunt(main);
+        ManSwap manswap = new ManSwap(main);
         GameManager manager = new GameManager(main);
 
         //getting the player who disconnected
@@ -48,7 +51,13 @@ public class GameListener implements Listener {
 
         //checking if the player is in the lobby
         if (manager.players.contains(player)) {
-            manager.playerDisc(player);
+            if (manager.getGame() == 1) {
+                blockhunt.playerDisc(player);
+            } else if (manager.getGame() == 2) {
+                manhunt.playerDisc(player);
+            } else if (manager.getGame() == 3) {
+                manswap.playerDisc(player);
+            }
         }
 
     }

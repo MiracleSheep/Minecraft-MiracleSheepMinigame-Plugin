@@ -147,3 +147,9 @@ BlockHuntTime: 300
 # or if it will keep going until the end of the timer
 #True means players can end the timer prematurely
 PlayersCanFinishTimer: true
+
+
+#This next section is for manhunt
+
+#This controls how long the grace time will be set for.
+ManhuntGraceTimer: 15
