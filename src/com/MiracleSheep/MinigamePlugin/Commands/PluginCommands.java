@@ -10,8 +10,7 @@
 package com.MiracleSheep.MinigamePlugin.Commands;
 
 //importing libraries and other packages
-import com.MiracleSheep.MinigamePlugin.Games.GameManager;
-import com.MiracleSheep.MinigamePlugin.Games.GameState;
+import com.MiracleSheep.MinigamePlugin.Games.*;
 import com.MiracleSheep.MinigamePlugin.Inventory.MainMenu;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
 import org.bukkit.Bukkit;
@@ -40,6 +39,9 @@ public class PluginCommands implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
         GameManager manager = new GameManager(main);
+        BlockHunt blockhunt  = new BlockHunt(main);
+        ManHunt manhunt = new ManHunt(main);
+        ManSwap manswap = new ManSwap(main);
 
         //Checking if the sender of the command is not a player and returning if true
         if (!(sender instanceof Player)) {
@@ -108,7 +110,13 @@ public class PluginCommands implements CommandExecutor {
 
                 if (manager.getGame() != 0) {
                     player.sendMessage(ChatColor.GREEN + "Leaving " + manager.getName() + "...");
-                    manager.playerQuit(player);
+                    if (manager.getGame() == 1) {
+                        blockhunt.playerQuit(player);
+                    } else if (manager.getGame() == 2) {
+                        manhunt.playerQuit(player);
+                    } else if (manager.getGame() == 3) {
+                        manswap.playerQuit(player);
+                    }
                 } else if (manager.getGame() == 0) {
                     player.sendMessage(ChatColor.RED + "There is no game currently active.");
                 }
@@ -140,7 +148,14 @@ public class PluginCommands implements CommandExecutor {
 
                         if (manager.getGame() != 0 && manager.getGameState() == GameState.WAITING) {
                             player.sendMessage(ChatColor.GREEN + "Starting " + manager.getName() + "...");
-                            manager.setState(GameState.STARTING);
+                            if (manager.getGame() == 1) {
+                                blockhunt.setState(GameState.STARTING);
+                            } else if (manager.getGame() == 2) {
+                                manhunt.setState(GameState.STARTING);
+                            } else if (manager.getGame() == 3) {
+                                manswap.setState(GameState.STARTING);
+                            }
+
                         } else if (manager.getGameState() != GameState.WAITING) {
                             player.sendMessage(ChatColor.RED + "The current game has already been started!");
                         } else {
@@ -184,8 +199,14 @@ public class PluginCommands implements CommandExecutor {
 
                 if (manager.getGame() != 0) {
                     player.sendMessage(ChatColor.GREEN + "Cancelling " + manager.getName() + "...");
-                    Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + manager.getStartPlayer().getDisplayName() + " has canceled the " + manager.getName() + "!");
-                    manager.setState(GameState.INACTIVE);
+                    Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + manager.getStartPlayer().getDisplayName() + " has canceled " + manager.getName() + "!");
+                    if (manager.getGame() == 1) {
+                        blockhunt.setState(GameState.INACTIVE);
+                    } else if (manager.getGame() == 2) {
+                        manhunt.setState(GameState.INACTIVE);
+                    } else if (manager.getGame() == 3) {
+                        manswap.setState(GameState.INACTIVE);
+                    }
                 } else if (manager.getGame() == 0) {
                     player.sendMessage(ChatColor.RED + "There is no game currently active.");
                 }
@@ -202,13 +223,6 @@ public class PluginCommands implements CommandExecutor {
 
 
         }
-
-
-
-
-
-
-
         //Returning from the function if none of the commands matched
         return true;
     }

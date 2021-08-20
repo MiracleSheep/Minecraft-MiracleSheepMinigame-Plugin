@@ -11,12 +11,15 @@ package com.MiracleSheep.MinigamePlugin.Items;
 
 
 //importing libraries and packages
+import com.MiracleSheep.MinigamePlugin.Games.ManHunt;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
@@ -26,7 +29,7 @@ import java.util.List;
 public class ItemManager {
 
     //creating an item called testitem
-    public static ItemStack testitem;
+    public static ItemStack tracker;
     //creating an instance of the main class
     public static MinigamePlugin main;
 
@@ -39,50 +42,41 @@ public class ItemManager {
 
 
 
-    //this function initializes all the items needed by calling their create functions
-    public static void init() {
-        createItem();
-    }
+//    //this function initializes all the items needed by calling their create functions
+//    public static void init() {
+//        createTracker();
+//    }
 
 
 
     //This method is responsable for creating a single item it creates a nether star in this example
-    private static void createItem() {
+    public static void createTracker() {
+        ManHunt manhunt = new ManHunt(main);
         //creating the item and what it appears as and amount
-        ItemStack item = new ItemStack(Material.NETHER_STAR, 1);
+        ItemStack item = new ItemStack(Material.COMPASS, 1);
         //modifying the meta of the item
-        ItemMeta meta = item.getItemMeta();
-        //modifying display name
-        meta.setDisplayName("§4DisplayName");
+        CompassMeta meta = (CompassMeta) item.getItemMeta();
         //modifying lore
         List<String> lore = new ArrayList<>();
-        lore.add("§bLore");
+        lore.add("§3Right click this to point to the current coordinates of the player");
         meta.setLore(lore);
         //adding enchantments
         meta.addEnchant(Enchantment.LUCK, 10, true);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        //setting the meta to this item
+        Location l = manhunt.runner.getLocation();
+        l.setY(0);
+        l.getBlock().setType(Material.LODESTONE);
+        meta.setCustomModelData(123);
+        meta.setDisplayName("Tracker");
+        meta.setLodestone(l);
+        meta.setLodestoneTracked(true);
         item.setItemMeta(meta);
         //setting the class variable testitem to the item in this function
-        testitem = item;
-
-        //Example of a shared recipe - a recipe with a defined shape in a crafting table
-        ShapedRecipe sr = new ShapedRecipe(NamespacedKey.minecraft("item"),item);
-        sr.shape("III","IDI","III");
-        sr.setIngredient('I',Material.IRON_INGOT);
-        sr.setIngredient('D', Material.DIAMOND);
-        Bukkit.getServer().addRecipe(sr);
-
-    //Example of a shapeless recipe - recipe without much shape
-    ShapelessRecipe s = new ShapelessRecipe(NamespacedKey.minecraft("shapeless_item"), item);
-        s.addIngredient(2, Material.BLAZE_POWDER);
-        Bukkit.getServer().addRecipe(s);
-
-    //example of a furnace recipe
-    FurnaceRecipe smelt = new FurnaceRecipe(NamespacedKey.minecraft("item_smelt"), item , Material.EMERALD , 1.0f,1*20);
-        Bukkit.getServer().addRecipe(smelt);
-
+        tracker = item;
 
     }
+
+
+
 
 }

@@ -11,10 +11,11 @@ package com.MiracleSheep.MinigamePlugin;
 
 //importing from other packages and libraries
 import com.MiracleSheep.MinigamePlugin.Commands.PluginCommands;
-import com.MiracleSheep.MinigamePlugin.Listeners.BlockHuntListener;
 import com.MiracleSheep.MinigamePlugin.Listeners.GameListener;
 import com.MiracleSheep.MinigamePlugin.Inventory.MainMenu;
 import com.MiracleSheep.MinigamePlugin.Items.ItemManager;
+import com.MiracleSheep.MinigamePlugin.Listeners.ManHuntListener;
+import com.MiracleSheep.MinigamePlugin.Listeners.ManSwapListener;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -40,10 +41,11 @@ public class MinigamePlugin extends JavaPlugin {
             PluginCommands command = new PluginCommands(this);
             //This calles the itemanager class and enables items for the plugin
             ItemManager i = new ItemManager(this);
-            ItemManager.init();
+            //ItemManager.init();
             //This registers events for the plugin by called the event class
             getServer().getPluginManager().registerEvents(new GameListener(this, inventory), this);
-            getServer().getPluginManager().registerEvents(new BlockHuntListener(this), this);
+            getServer().getPluginManager().registerEvents(new ManHuntListener(this), this);
+            getServer().getPluginManager().registerEvents(new ManSwapListener(this), this);
             //Use this line as a template for when adding a new command. It adds the command to the plugin Simply copy paste the line and replace test with what the user needs to type in
             getCommand("minigame").setExecutor(command);
             getCommand("quit").setExecutor(command);
@@ -51,7 +53,7 @@ public class MinigamePlugin extends JavaPlugin {
             getCommand("start").setExecutor(command);
             getCommand("cancel").setExecutor(command);
             //Sending a message to show the plugin is enabled
-            getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[PluginTemplate] plugin is enabled.");
+            getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[MinigamePlugin] plugin is enabled.");
 
         }
     }
