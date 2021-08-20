@@ -52,8 +52,8 @@ public class ManHunt extends GameManager {
     @Override
     public void onInactive() {
         stopTimer();
-        setGame(0);
         started = false;
+        setGame(0);
         for (int i = 0 ; i < players.size() ; i++) {
             for (int j = 0; j < players.get(i).getInventory().getSize() ; j++) {
                 ItemStack item = players.get(i).getInventory().getItem(j);

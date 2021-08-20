@@ -1,6 +1,29 @@
 #This controls whether or not you want the plugin to be enabled
 Enabled: true
 
+#
+#
+# This section is for manhunt
+#
+#
+
+#This controls how long the grace time will be set for.
+ManhuntGraceTimer: 60
+
+#
+#
+# This section is for manswap
+#
+#
+
+ManSwapTimer: 300
+
+#
+#
+# This section is for blockhunt
+#
+#
+
 #This controls the items used by the block hunt minigame.
 #By default it uses items from 1.17, but you can change the items to make it compatible with earlier versions of minecraft
 BlocksRolled:
@@ -149,7 +172,3 @@ BlockHuntTime: 300
 PlayersCanFinishTimer: true
 
 
-#This next section is for manhunt
-
-#This controls how long the grace time will be set for.
-ManhuntGraceTimer: 15

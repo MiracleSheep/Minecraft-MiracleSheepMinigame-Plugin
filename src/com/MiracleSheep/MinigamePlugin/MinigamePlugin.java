@@ -15,6 +15,7 @@ import com.MiracleSheep.MinigamePlugin.Listeners.GameListener;
 import com.MiracleSheep.MinigamePlugin.Inventory.MainMenu;
 import com.MiracleSheep.MinigamePlugin.Items.ItemManager;
 import com.MiracleSheep.MinigamePlugin.Listeners.ManHuntListener;
+import com.MiracleSheep.MinigamePlugin.Listeners.ManSwapListener;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -44,6 +45,7 @@ public class MinigamePlugin extends JavaPlugin {
             //This registers events for the plugin by called the event class
             getServer().getPluginManager().registerEvents(new GameListener(this, inventory), this);
             getServer().getPluginManager().registerEvents(new ManHuntListener(this), this);
+            getServer().getPluginManager().registerEvents(new ManSwapListener(this), this);
             //Use this line as a template for when adding a new command. It adds the command to the plugin Simply copy paste the line and replace test with what the user needs to type in
             getCommand("minigame").setExecutor(command);
             getCommand("quit").setExecutor(command);

@@ -41,7 +41,7 @@ public class BlockHunt extends GameManager {
     public static int currentDifficulty = 0;
 
     //this will hold how far the system is
-    public static int howfar = 0;
+    public static int howfar = 1;
 
     //integers for the timer
     int time;
@@ -134,11 +134,11 @@ public class BlockHunt extends GameManager {
 
         //checking if the difficulty is ready to be moved up
         if (howfar == difficulty) {
-            if (currentDifficulty == 3) {
-                howfar = 0;
+            if (currentDifficulty == 2) {
+                howfar = 1;
             } else {
                 currentDifficulty += 1;
-                howfar = 0;
+                howfar = 1;
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The difficulty has increased!");
             }
         } else {
@@ -269,7 +269,7 @@ public class BlockHunt extends GameManager {
     //method to reset the game
     public void reset() {
         currentDifficulty = 0;
-        howfar = 0;
+        howfar = 1;
     }
 
     //iswon method ovveride

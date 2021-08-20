@@ -223,38 +223,6 @@ public class PluginCommands implements CommandExecutor {
 
 
         }
-
-        //This is a command that lets people change their role to different games
-        if (cmd.getName().equalsIgnoreCase("hunter")) {
-
-            //Getting the sender of the command
-            Player player = (Player) sender;
-
-            if (manhunt.getGame() == 2) {
-
-                if (manhunt.players.contains(player)) {
-
-
-                } else {
-                    player.sendMessage(ChatColor.RED + "You are not in a game!");
-                }
-
-            } else {
-                player.sendMessage(ChatColor.RED + "There is no manhunt game being played!");
-            }
-
-
-
-
-        }
-
-
-
-
-
-
-
-
         //Returning from the function if none of the commands matched
         return true;
     }
