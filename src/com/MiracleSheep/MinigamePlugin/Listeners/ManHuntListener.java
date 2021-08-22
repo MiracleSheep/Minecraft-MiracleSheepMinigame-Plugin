@@ -65,7 +65,7 @@ public class ManHuntListener implements Listener {
 
 
 
-                    if (player.getInventory().contains(i.tracker.getType())) {
+                    if (player.getInventory().contains(i.tracker.getType()) || player.getInventory().getItemInOffHand().getType() == i.tracker.getType()) {
 
                     } else {
                         i.createTracker();
@@ -233,7 +233,7 @@ public class ManHuntListener implements Listener {
             if (manhunt.players.contains(player)) {
 
                 if (player != manhunt.runner) {
-                    if(e.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
+                    if(e.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY) && e.getCurrentItem().getItemMeta().hasCustomModelData() && e.getCurrentItem().getType() == i.tracker.getType()) {
                         e.setCancelled(true);
                     }
                 }

@@ -27,7 +27,7 @@ import java.util.List;
 public class DeathSwap extends GameManager {
 
     //integers for the timer
-    int time;
+    public static int time;
     public static int taskID2;
 
     //passing the instance of the main class
@@ -67,7 +67,6 @@ public class DeathSwap extends GameManager {
     //function that gets called when the state is active
     @Override
     public void onActive() {
-
         run();
 
     }
@@ -75,7 +74,7 @@ public class DeathSwap extends GameManager {
     //function that gets called when the state is transition
     @Override
     public void onTransition() {
-
+        time = 30;
         setState(GameState.ACTIVE);
     }
 
@@ -105,19 +104,7 @@ public class DeathSwap extends GameManager {
 
     }
 
-    //method to stop the timer
-    public void stopTimer(boolean restart) {
-        Bukkit.getScheduler().cancelTask(taskID2);
 
-        if (restart) {
-            setState(GameState.TRANSITION);
-        } else {
-            for (int i = 0 ; i < players.size() ; i++) {
-                players.get(i).setHealth(20);
-                players.get(i).setFoodLevel(20);
-            }
-        }
-    }
 
 
 
@@ -162,12 +149,8 @@ public class DeathSwap extends GameManager {
                 if(time == 0) {
                     Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "Time is up!");
                     swap();
-                    stopTimer(false);
-
-                    return;
+                    stopTimer(true);
                 }
-
-
 
                 time = time - 1;
 
@@ -193,7 +176,7 @@ public class DeathSwap extends GameManager {
 
         Collections.shuffle(players);
         for (int i = 0; i < players.size(); i += 2) {
-            if (players.size() - i == 3) {
+            if ((players.size() - i) == 3) {
                 //swap the last three players instead
                 Player one = players.get(i);
                 Player two = players.get(i+1);
@@ -206,6 +189,7 @@ public class DeathSwap extends GameManager {
                 one.teleport(loc2);
                 two.teleport(loc3);
                 three.teleport(loc);
+                i = players.size();
 
 
             } else {
@@ -219,6 +203,19 @@ public class DeathSwap extends GameManager {
                 one.teleport(loc2);
                 two.teleport(loc);
                 //teleport one to two, and two to one.
+            }
+        }
+    }
+
+    //method to stop the timer
+    public void stopTimer(boolean restart) {
+        Bukkit.getScheduler().cancelTask(taskID2);
+        if (restart) {
+            setState(GameState.TRANSITION);
+        } else {
+            for (int i = 0 ; i < players.size() ; i++) {
+                players.get(i).setHealth(20);
+                players.get(i).setFoodLevel(20);
             }
         }
     }
