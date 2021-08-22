@@ -9,34 +9,26 @@
 package com.MiracleSheep.MinigamePlugin.Listeners;
 
 //These are the required librairies and packages
-import com.MiracleSheep.MinigamePlugin.Games.BlockHunt;
 import com.MiracleSheep.MinigamePlugin.Games.GameState;
 import com.MiracleSheep.MinigamePlugin.Games.ManHunt;
-import com.MiracleSheep.MinigamePlugin.Games.ManSwap;
 import com.MiracleSheep.MinigamePlugin.Items.ItemManager;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
 import org.bukkit.*;
 import org.bukkit.entity.EnderDragon;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.CompassMeta;
-
-import java.util.Calendar;
 
 //this is the class that listens for hunt events
 public class ManHuntListener implements Listener {
@@ -133,7 +125,7 @@ public class ManHuntListener implements Listener {
         if(e.getEntity() instanceof EnderDragon){
             if (manhunt.getGameState() == GameState.ACTIVE && manhunt.getGame() == 2) {
             Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Ender Dragon has been defeated!");
-            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The runner " + manhunt.runner.getDisplayName() + " wins!");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The runner " + manhunt.runner.getDisplayName() + "" + ChatColor.GOLD + " wins!");
             manhunt.setState(GameState.INACTIVE);
 
             }
@@ -154,7 +146,7 @@ public class ManHuntListener implements Listener {
             if (manhunt.players.contains(player)) {
 
             if (player == manhunt.runner) {
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The runner " + manhunt.runner.getDisplayName() + " has been defeated!");
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The runner " + manhunt.runner.getDisplayName() + "" + ChatColor.GOLD + " has been defeated!");
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The hunters win!");
                 manhunt.setState(GameState.INACTIVE);
             } else {

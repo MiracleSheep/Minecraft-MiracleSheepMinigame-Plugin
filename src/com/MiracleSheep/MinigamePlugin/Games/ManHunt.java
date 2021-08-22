@@ -12,10 +12,7 @@ package com.MiracleSheep.MinigamePlugin.Games;
 import com.MiracleSheep.MinigamePlugin.Items.ItemManager;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
 import com.MiracleSheep.MinigamePlugin.Tasks.BlockHuntPlayer;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -33,7 +30,7 @@ public class ManHunt extends GameManager {
 
     //integers for the timer
     int time;
-    public static int taskID;
+    public static int taskID3;
 
     //player that will be the runner
     public static Player runner;
@@ -75,7 +72,7 @@ public class ManHunt extends GameManager {
     public void onWaiting() {
         setGame(2);
         players.add(getStartPlayer());
-        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + getStartPlayer().getDisplayName() + " has started a game of " + getName() + "!");
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + getStartPlayer().getDisplayName() + "" + ChatColor.GOLD + " has started a game of " + getName() + "!");
         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Anyone who wants to play should enter the command /join!");
     }
 
@@ -83,13 +80,16 @@ public class ManHunt extends GameManager {
     @Override
     public void onStarting() {
         runner = players.get(generaterandom());
-        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + runner.getDisplayName() + " is the runner!");
-        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Prepare yourselves!");
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + runner.getDisplayName() + "" + ChatColor.GOLD + " is the runner!");
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The grace period has started!");
         for (int i = 0 ; i < players.size() ; i++) {
             players.get(i).setHealth(20);
             players.get(i).setFoodLevel(20);
             inv.createTracker();
             if (players.get(i) != runner) {
+                Location loc = players.get(i).getLocation();
+                loc.setY(players.get(i).getWorld().getHighestBlockAt( players.get(i).getLocation().getBlockX(), players.get(i).getLocation().getBlockZ()).getY() + 1);
+                players.get(i).teleport(loc);
                 players.get(i).getInventory().addItem(inv.tracker);
             }
 
@@ -137,7 +137,7 @@ public class ManHunt extends GameManager {
         int fulltime = time;
 
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        taskID = scheduler.scheduleSyncRepeatingTask(main, new Runnable() {
+        taskID3 = scheduler.scheduleSyncRepeatingTask(main, new Runnable() {
             @Override
             public void run() {
 
@@ -169,7 +169,7 @@ public class ManHunt extends GameManager {
 
     //method to stop the timer
     public void stopTimer() {
-        Bukkit.getScheduler().cancelTask(taskID);
+        Bukkit.getScheduler().cancelTask(taskID3);
     }
 
 

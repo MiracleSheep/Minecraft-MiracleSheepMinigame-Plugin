@@ -56,7 +56,7 @@ public class MainMenu implements InventoryHolder {
         //This is an item for the manhunt icon
         ItemStack manHunt = createItem("Manhunt",Material.COMPASS, Collections.singletonList("Select this to play Manhunt!"));;
         //This is an item for the ManSwap minigame
-        ItemStack manSwap = createItem("Man Swap",Material.LAVA_BUCKET, Collections.singletonList("Select this to play Man Swap!"));
+        ItemStack manSwap = createItem("Death Swap",Material.LAVA_BUCKET, Collections.singletonList("Select this to play Death Swap!"));
         //This is an the closing icon
         ItemStack close = createItem("Close menu",Material.BARRIER, Collections.singletonList("Select this to close the menu."));
 

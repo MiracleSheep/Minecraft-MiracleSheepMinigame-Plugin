@@ -87,7 +87,7 @@ public class GameManager {
         } else if (intGame == 2) {
             setName("Man Hunt");
         } else if (intGame == 3) {
-            setName("Man Swap");
+            setName("Death Swap");
         }
         Game = intGame;
 
@@ -141,7 +141,7 @@ public class GameManager {
     public void addPlayer(Player player) {
 
         players.add(player);
-        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + " Has joined " + getName() + "!");
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + "" + ChatColor.GOLD + " Has joined " + getName() + "!");
         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Players in queue: " + players.size());
         if (players.size() == 2) {
             startPlayer.sendMessage(ChatColor.AQUA + "Use the command /start to begin " + getName() + " when you are ready!");
@@ -154,7 +154,7 @@ public class GameManager {
 
 
         players.remove(player);
-        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + " has quit " + getName() + "!");
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + "" + ChatColor.GOLD + " has quit " + getName() + "!");
         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Players remaining: " + players.size());
 
         if (player == startPlayer && players.size() != 0) {
@@ -168,7 +168,7 @@ public class GameManager {
         if (players.size() == 1) {
 
             if (gameState == GameState.ACTIVE) {
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + players.get(0).getDisplayName() + " Wins the game!");
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + players.get(0).getDisplayName() + "" + ChatColor.GOLD + " Wins the game!");
                 setState(GameState.INACTIVE);
             } else if (gameState == GameState.WAITING) {
                 startPlayer.sendMessage(ChatColor.AQUA + "Use the command /cancel to cancel the minigame.");
@@ -185,7 +185,7 @@ public class GameManager {
     public void playerDisc(Player player) {
 
         players.remove(player);
-        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + " has disconnected from " + getName() + "!");
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + "" + ChatColor.GOLD + " has disconnected from " + getName() + "!");
         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Players remaining: " + players.size());
 
         if (player == startPlayer && players.size() != 0) {
@@ -197,7 +197,7 @@ public class GameManager {
         if (players.size() == 1) {
 
             if (gameState == GameState.ACTIVE) {
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + players.get(0).getDisplayName() + " Wins the game!");
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + players.get(0).getDisplayName() + "" + ChatColor.GOLD + " Wins the game!");
                 setState(GameState.INACTIVE);
             } else if (gameState == GameState.WAITING) {
                 startPlayer.sendMessage(ChatColor.AQUA + "Use the command /cancel to cancel the minigame.");

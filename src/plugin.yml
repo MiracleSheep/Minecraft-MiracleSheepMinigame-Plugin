@@ -30,6 +30,10 @@ commands:
     description: cancels the minigame
     usage: /<command>
     aliases: [ stopminigame ]
+  minigamehelp:
+    description: shows all commands
+    usage: /<command>
+    aliases: [ ]
 
 
 

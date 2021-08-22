@@ -66,7 +66,7 @@ public class BlockHunt extends GameManager {
     public void onWaiting() {
                 setGame(1);
                 players.add(getStartPlayer());
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + getStartPlayer().getDisplayName() + " has started a game of " + getName() + "!");
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + getStartPlayer().getDisplayName() + "" + ChatColor.GOLD + " has started a game of " + getName() + "!");
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: To play, do /join!");
 
     }
@@ -78,8 +78,9 @@ public class BlockHunt extends GameManager {
 
          for (int i = 0 ; i < players.size() ; i++) {
              players.get(i).setHealth(20);
-             players.get(i).setFoodLevel(10);
+             players.get(i).setFoodLevel(20);
          }
+         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Block Hunt has begun!");
          setState(GameState.ACTIVE);
 
 
@@ -192,7 +193,7 @@ public class BlockHunt extends GameManager {
                     if (playerlist.get(i).player.isOnline() && players.contains(playerlist.get(i).player)) {
 
                         if (playerlist.get(i).player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.getMaterial(playerlist.get(i).block))) {
-                            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + playerlist.get(i).player.getDisplayName() + " has found their block!");
+                            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + playerlist.get(i).player.getDisplayName() + "" + ChatColor.GOLD + " has found their block!");
                             playerlist.remove(i);
                         } else {
                         }
@@ -233,7 +234,7 @@ public class BlockHunt extends GameManager {
                     Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "Time is up!");
 
                     for (int j = 0 ; j < playerlist.size() ; j++) {
-                        Bukkit.broadcastMessage(ChatColor.GOLD + "" + playerlist.get(j).player.getDisplayName() + " failed to find the block " + playerlist.get(j).block + " in time!");
+                        Bukkit.broadcastMessage(ChatColor.GOLD + "" + playerlist.get(j).player.getDisplayName() + "" + ChatColor.GOLD + " failed to find the block " + playerlist.get(j).block + " in time!");
                         playerElim(playerlist.get(j).player);
                     }
                         isWon();
@@ -261,7 +262,7 @@ public class BlockHunt extends GameManager {
         } else {
             for (int i = 0 ; i < players.size() ; i++) {
                 players.get(i).setHealth(20);
-                players.get(i).setFoodLevel(10);
+                players.get(i).setFoodLevel(20);
             }
         }
     }
@@ -279,7 +280,7 @@ public class BlockHunt extends GameManager {
 
         if (players.size() == 1) {
 
-            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + players.get(0).getDisplayName() + " Wins the game!");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + players.get(0).getDisplayName() + "" + ChatColor.GOLD + " Wins the game!");
             setState(GameState.INACTIVE);
 
         } else if (players.size() == 0) {

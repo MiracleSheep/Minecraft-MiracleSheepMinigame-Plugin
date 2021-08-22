@@ -52,6 +52,7 @@ public class MinigamePlugin extends JavaPlugin {
             getCommand("join").setExecutor(command);
             getCommand("start").setExecutor(command);
             getCommand("cancel").setExecutor(command);
+            getCommand("minigamehelp").setExecutor(command);
             //Sending a message to show the plugin is enabled
             getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[MinigamePlugin] plugin is enabled.");
 

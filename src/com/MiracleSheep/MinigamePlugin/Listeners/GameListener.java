@@ -43,7 +43,7 @@ public class GameListener implements Listener {
 
         BlockHunt blockhunt  = new BlockHunt(main);
         ManHunt manhunt = new ManHunt(main);
-        ManSwap manswap = new ManSwap(main);
+        DeathSwap manswap = new DeathSwap(main);
         GameManager manager = new GameManager(main);
 
         //getting the player who disconnected
@@ -69,7 +69,7 @@ public class GameListener implements Listener {
 
         BlockHunt blockhunt  = new BlockHunt(main);
         ManHunt manhunt = new ManHunt(main);
-        ManSwap manswap = new ManSwap(main);
+        DeathSwap manswap = new DeathSwap(main);
 
         //This checks if the click was in an inventory
         if (e.getClickedInventory() == null) { return; }
@@ -110,7 +110,7 @@ public class GameListener implements Listener {
             manhunt.setState(GameState.WAITING);
         } else if (e.getCurrentItem().getType() == Material.LAVA_BUCKET) {
             //outputting the choice to the player
-            player.sendMessage(ChatColor.GREEN + "Selecting Man Swap!");
+            player.sendMessage(ChatColor.GREEN + "Selecting Death Swap!");
             player.sendMessage(ChatColor.GREEN + "Searching for players...");
             player.closeInventory();
             manswap.setStartPlayer(player);
