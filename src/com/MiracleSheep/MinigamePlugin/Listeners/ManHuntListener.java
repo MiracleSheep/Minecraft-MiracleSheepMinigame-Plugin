@@ -9,8 +9,12 @@
 package com.MiracleSheep.MinigamePlugin.Listeners;
 
 //These are the required librairies and packages
+import com.MiracleSheep.MinigamePlugin.Games.BlockHunt;
+import com.MiracleSheep.MinigamePlugin.Games.DeathSwap;
 import com.MiracleSheep.MinigamePlugin.Games.GameState;
 import com.MiracleSheep.MinigamePlugin.Games.ManHunt;
+import com.MiracleSheep.MinigamePlugin.Inventory.HunterSelection;
+import com.MiracleSheep.MinigamePlugin.Inventory.MainMenu;
 import com.MiracleSheep.MinigamePlugin.Items.ItemManager;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
 import org.bukkit.*;
@@ -60,7 +64,7 @@ public class ManHuntListener implements Listener {
 
 
 
-                if (player != manhunt.runner) {
+                if (player != manhunt.runners) {
 
 
 
@@ -68,7 +72,7 @@ public class ManHuntListener implements Listener {
                     if (player.getInventory().contains(i.tracker.getType()) || player.getInventory().getItemInOffHand().getType() == i.tracker.getType()) {
 
                     } else {
-                        i.createTracker();
+                        i.createTracker(player);
                         player.getInventory().addItem(i.tracker);
                     }
 
@@ -125,7 +129,7 @@ public class ManHuntListener implements Listener {
         if(e.getEntity() instanceof EnderDragon){
             if (manhunt.getGameState() == GameState.ACTIVE && manhunt.getGame() == 2) {
             Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Ender Dragon has been defeated!");
-            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The runner " + manhunt.runner.getDisplayName() + "" + ChatColor.GOLD + " wins!");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Runners have won!");
             manhunt.setState(GameState.INACTIVE);
 
             }
@@ -145,10 +149,10 @@ public class ManHuntListener implements Listener {
 
             if (manhunt.players.contains(player)) {
 
-            if (player == manhunt.runner) {
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The runner " + manhunt.runner.getDisplayName() + "" + ChatColor.GOLD + " has been defeated!");
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The hunters win!");
-                manhunt.setState(GameState.INACTIVE);
+            if (manhunt.runners.contains(player)) {
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The runner " + player.getDisplayName() + "" + ChatColor.GOLD + " has been killed!");
+                manhunt.playerElim(player);
+
             } else {
                 for (int j = 0; j < player.getInventory().getSize() ; j++) {
                     ItemStack item = player.getInventory().getItem(j);
@@ -185,7 +189,7 @@ public class ManHuntListener implements Listener {
 
             if (manhunt.players.contains(player)) {
 
-                if (player != manhunt.runner) {
+                if (player != manhunt.runners) {
                     if (e.getItemDrop().getItemStack().getItemMeta().hasCustomModelData()){
                     if (e.getItemDrop().getItemStack().getItemMeta().getCustomModelData() == i.tracker.getItemMeta().getCustomModelData()) {
                         e.setCancelled(true);
@@ -212,7 +216,7 @@ public class ManHuntListener implements Listener {
 
             if (manhunt.players.contains(player)) {
 
-                if (player != manhunt.runner && manhunt.started == false) {
+                if (player != manhunt.runners && manhunt.started == false) {
                             e.setCancelled(true);
                     }
 
@@ -232,7 +236,7 @@ public class ManHuntListener implements Listener {
 
             if (manhunt.players.contains(player)) {
 
-                if (player != manhunt.runner) {
+                if (player != manhunt.runners) {
                     if(e.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY) && e.getCurrentItem().getItemMeta().hasCustomModelData() && e.getCurrentItem().getType() == i.tracker.getType()) {
                         e.setCancelled(true);
                     }
@@ -240,6 +244,56 @@ public class ManHuntListener implements Listener {
 
             }
         }
+
+        //This checks if the click was in an inventory
+        if (e.getClickedInventory() == null) { return; }
+
+        //Checking if clicked in the selection screen
+        if (e.getClickedInventory().getHolder() instanceof HunterSelection) {
+            e.setCancelled(true);
+
+            if (manhunt.getGame() != 0) {
+                player.closeInventory();
+                player.sendMessage(ChatColor.GREEN + "There is currently an ongoing game.");
+                player.sendMessage(ChatColor.GREEN + "Please wait for it to finish before starting a new one.");
+
+            } else {
+
+
+                //Checking what the player clicked on
+                if (e.getCurrentItem().getType() == Material.WHITE_STAINED_GLASS_PANE || e.getCurrentItem().getType() == Material.YELLOW_STAINED_GLASS_PANE) {
+                    //outputting the choice to the player
+                    player.sendMessage(ChatColor.RED + "This is not an option");
+                    player.closeInventory();
+                }  else if (e.getCurrentItem().getType() == Material.RED_WOOL) {
+                    //outputting the choice to the player
+                    player.sendMessage(ChatColor.GREEN + "Cancelled hunter selection...");
+                    player.closeInventory();
+                    manhunt.runners.clear();
+                    manhunt.hunters.clear();
+                }  else if (e.getCurrentItem().getType() == Material.GREEN_WOOL) {
+                    //outputting the choice to the player
+                    player.sendMessage(ChatColor.GREEN + "Confirmed hunter selection!");
+                    manhunt.setState(GameState.STARTING);
+                    player.closeInventory();
+
+
+                for (int j = 0 ; j < Bukkit.getServer().getOnlinePlayers().toArray(new Player[0]).length; j++) {
+                    if (e.getCurrentItem().getType() == Material.PLAYER_HEAD) {
+                        manhunt.hunters.add(player);
+                        player.closeInventory();
+                        HunterSelection gui = new HunterSelection(main);
+                        player.openInventory(gui.getInventory());
+                    }
+                }
+
+            }
+
+        }
+
+    }
+
+
 
 
 
@@ -257,7 +311,7 @@ public class ManHuntListener implements Listener {
 
             if (manhunt.players.contains(player)) {
 
-                if (player != manhunt.runner) {
+                if (player != manhunt.runners) {
 
                         if((e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) && player.getInventory().getItemInMainHand().getType() == i.tracker.getType()) {
 
@@ -265,16 +319,21 @@ public class ManHuntListener implements Listener {
 
 
                                 if (player.getInventory().getItemInMainHand().getItemMeta().getCustomModelData() == i.tracker.getItemMeta().getCustomModelData()) {
+                                    boolean is_in_another_dimension = true;
+                                    for (int i = 0; i < manhunt.runners.size(); i++) {
+                                        if (manhunt.runners.get(i).player.getWorld().getEnvironment().equals(player.getWorld().getEnvironment())) {
+                                            is_in_another_dimension = false;
+                                        }
+                                    }
+                                    if (is_in_another_dimension == true) {
+                                        player.sendMessage(ChatColor.RED + "You are not in the same dimension!");
+                                    } else {
+                                        i.createTracker(player);
+                                        player.getInventory().setItemInMainHand(i.tracker);
+                                    }
 
 
-                            if (!(manhunt.runner.getWorld().getEnvironment().equals(player.getWorld().getEnvironment()))) {
-                                player.sendMessage(ChatColor.RED + "You are not in the same dimension!");
-                            } else {
-                                i.createTracker();
-                                player.getInventory().setItemInMainHand(i.tracker);
 
-
-                            }
                         }
                     }
                     }

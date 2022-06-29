@@ -11,9 +11,8 @@ package com.MiracleSheep.MinigamePlugin.Games;
 //importing librairies and otherwise
 import com.MiracleSheep.MinigamePlugin.Items.ItemManager;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
-import com.MiracleSheep.MinigamePlugin.Tasks.BlockHuntPlayer;
+import com.MiracleSheep.MinigamePlugin.Tasks.ManHuntPlayer;
 import org.bukkit.*;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -25,15 +24,18 @@ import java.util.ArrayList;
 public class ManHunt extends GameManager {
 
 
-    //arraylist that holds players and their blocks
-    public static ArrayList<BlockHuntPlayer> playerlist = new ArrayList<BlockHuntPlayer>();
-
     //integers for the timer
     int time;
     public static int taskID3;
 
-    //player that will be the runner
-    public static Player runner;
+    //players that will be the runner
+    public static ArrayList<ManHuntPlayer> runners = new ArrayList<ManHuntPlayer>();
+
+    //players that will be the hunter
+    public static ArrayList<Player> hunters = new ArrayList<Player>();
+
+    //players that are dead
+    public static ArrayList<Player> deadfolk = new ArrayList<Player>();
 
     public ItemManager inv = new ItemManager(main);
 
@@ -43,6 +45,27 @@ public class ManHunt extends GameManager {
     //passing the instance of the main class
     public ManHunt(MinigamePlugin main) {
         super(main);
+    }
+
+    @Override
+    public void removeplayer(Player player) {
+        players.remove(player);
+        for (int i = 0 ; i < runners.size(); i++)  {
+            if (runners.get(i).player == player) {
+                runners.remove(i);
+            }
+        }
+    }
+
+    @Override
+    public void playerElim(Player player) {
+        //add minus lives here
+            for (int i = 0 ; i < runners.size(); i++)  {
+                if (runners.get(i).player == player) {
+                    runners.remove(i);
+                    deadfolk.add(player);
+                }
+            }
     }
 
     //function that gets called when the state is inactive - works as a unique clanup functiuon
@@ -79,14 +102,27 @@ public class ManHunt extends GameManager {
     //function that gets called when the state is starting
     @Override
     public void onStarting() {
-        runner = players.get(generaterandom());
-        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + runner.getDisplayName() + "" + ChatColor.GOLD + " is the runner!");
+        // broadcasting the runners
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Runners:");
+        for (int i = 0; i < runners.size(); i++ ) {
+            Bukkit.broadcastMessage(ChatColor.DARK_GREEN + "- " + runners.get(i).player.getDisplayName());
+        }
+
+        // broadcasting the hunters
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Hunters:");
+        for (int i = 0; i < runners.size(); i++ ) {
+            Bukkit.broadcastMessage(ChatColor.DARK_RED + "- " + hunters.get(i).getDisplayName());
+        }
+
+
         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The grace period has started!");
         for (int i = 0 ; i < players.size() ; i++) {
             players.get(i).setHealth(20);
             players.get(i).setFoodLevel(20);
-            inv.createTracker();
-            if (players.get(i) != runner) {
+            for (int j = 0 ; j < hunters.size(); j++)  {
+                inv.createTracker(hunters.get(j));
+            }
+            if (hunters.contains(players.get(i))) {
                 Location loc = players.get(i).getLocation();
                 loc.setY(players.get(i).getWorld().getHighestBlockAt( players.get(i).getLocation().getBlockX(), players.get(i).getLocation().getBlockZ()).getY() + 1);
                 players.get(i).teleport(loc);
@@ -185,6 +221,9 @@ public class ManHunt extends GameManager {
         return (int)((Math.random() * range) + min);
 
     }
+
+
+
 
 
 

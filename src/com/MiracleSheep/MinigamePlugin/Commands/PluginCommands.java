@@ -11,6 +11,7 @@ package com.MiracleSheep.MinigamePlugin.Commands;
 
 //importing libraries and other packages
 import com.MiracleSheep.MinigamePlugin.Games.*;
+import com.MiracleSheep.MinigamePlugin.Inventory.HunterSelection;
 import com.MiracleSheep.MinigamePlugin.Inventory.MainMenu;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
 import org.bukkit.Bukkit;
@@ -199,9 +200,14 @@ public class PluginCommands implements CommandExecutor {
                             if (manager.getGame() == 1) {
                                 blockhunt.setState(GameState.STARTING);
                             } else if (manager.getGame() == 2) {
-                                manhunt.setState(GameState.STARTING);
+                                HunterSelection gui = new HunterSelection(main);
+                                player.openInventory(gui.getInventory());
+
                             } else if (manager.getGame() == 3) {
                                 manswap.setState(GameState.STARTING);
+                                //opening the menu to select hunters
+
+
                             }
 
                         } else if (manager.getGameState() != GameState.WAITING) {

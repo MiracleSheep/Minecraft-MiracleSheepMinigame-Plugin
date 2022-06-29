@@ -93,6 +93,18 @@ public class GameManager {
 
     }
 
+    //function that gets called in case there are any extrea lists with player on them thgat need removing
+    public void removeplayer (Player player) {
+
+    }
+
+    //method for when a player gets eliminated
+    public void playerElim(Player player) {
+
+
+
+
+    }
 
     //function that gets called when the state is inactive - works as a unique clanup functiuon
     public void onInactive() {
@@ -152,8 +164,7 @@ public class GameManager {
     //method to add a player to the array and record how many players tehre are
     public void playerQuit(Player player) {
 
-
-        players.remove(player);
+        removeplayer(player);
         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + "" + ChatColor.GOLD + " has quit " + getName() + "!");
         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Players remaining: " + players.size());
 
@@ -184,7 +195,7 @@ public class GameManager {
     //method for when a player disconnects
     public void playerDisc(Player player) {
 
-        players.remove(player);
+        removeplayer(player);
         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + "" + ChatColor.GOLD + " has disconnected from " + getName() + "!");
         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Players remaining: " + players.size());
 
@@ -212,14 +223,6 @@ public class GameManager {
 
     }
 
-    //method for when a player gets eliminated
-    public void playerElim(Player player) {
-
-        players.remove(player);
-        //Bukkit.broadcastMessage(ChatColor.GOLD + player.getDisplayName() + " has been eliminated from " + getName() + "!");
-
-
-    }
 
 
     //function that gets game

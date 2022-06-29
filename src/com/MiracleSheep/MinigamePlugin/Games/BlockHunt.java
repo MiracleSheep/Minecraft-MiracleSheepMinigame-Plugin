@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.ArrayList;
@@ -52,6 +53,18 @@ public class BlockHunt extends GameManager {
     public BlockHunt(MinigamePlugin main) {
         super(main);
 
+    }
+
+    //function that says what do to when a player needs to be removed from the game
+    @Override
+    public void removeplayer(Player player) {
+        players.remove(player);
+    }
+
+    //method for when a player gets eliminated
+    @Override
+    public void playerElim(Player player) {
+        players.remove(player);
     }
 
     //function that gets called when the state is inactive - works as a unique clanup functiuon
@@ -317,6 +330,8 @@ public class BlockHunt extends GameManager {
         difficulty = main.getConfig().getInt("BlockHuntDifficulty");
 
     }
+
+
 
 
 
