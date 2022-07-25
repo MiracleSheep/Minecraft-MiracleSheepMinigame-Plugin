@@ -4,19 +4,19 @@
  * @version: Created August 10th 2021
  */
 
-package com.MiracleSheep.MinigamePlugin.Tasks;
+package com.MiracleSheep.MinigamePlugin.ObjectTypes;
 
 import org.bukkit.entity.Player;
 
-public class BlockHuntPlayer {
+public class ManHuntPlayer {
 
     public Player player;
 
-    public String block;
+    public int lives;
 
-    public BlockHuntPlayer(Player player, String block) {
+    public ManHuntPlayer(Player player, int lives) {
         this.player = player;
-        this.block = block;
+        this.lives = lives;
     }
 
 }

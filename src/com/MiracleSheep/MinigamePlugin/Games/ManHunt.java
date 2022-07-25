@@ -11,7 +11,7 @@ package com.MiracleSheep.MinigamePlugin.Games;
 //importing librairies and otherwise
 import com.MiracleSheep.MinigamePlugin.Items.ItemManager;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
-import com.MiracleSheep.MinigamePlugin.Tasks.ManHuntPlayer;
+import com.MiracleSheep.MinigamePlugin.ObjectTypes.ManHuntPlayer;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -27,6 +27,9 @@ public class ManHunt extends GameManager {
     //integers for the timer
     int time;
     public static int taskID3;
+
+    //integer that holds the number of lives that all runners start with
+    public static int lives = 0;
 
     //players that will be the runner
     public static ArrayList<ManHuntPlayer> runners = new ArrayList<ManHuntPlayer>();
@@ -59,7 +62,7 @@ public class ManHunt extends GameManager {
 
     @Override
     public void playerElim(Player player) {
-        //add minus lives here
+
             for (int i = 0 ; i < runners.size(); i++)  {
                 if (runners.get(i).player == player) {
                     runners.remove(i);
@@ -102,6 +105,18 @@ public class ManHunt extends GameManager {
     //function that gets called when the state is starting
     @Override
     public void onStarting() {
+
+        // putting all players not in the hunters into the runners
+        for (int i = 0 ; i < players.size() ; i++) {
+
+            if (hunters.contains(players.get(i))) {
+
+            } else {
+                runners.add(new ManHuntPlayer(players.get(i),lives));
+            }
+
+        }
+
         // broadcasting the runners
         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Runners:");
         for (int i = 0; i < runners.size(); i++ ) {
@@ -110,7 +125,7 @@ public class ManHunt extends GameManager {
 
         // broadcasting the hunters
         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Hunters:");
-        for (int i = 0; i < runners.size(); i++ ) {
+        for (int i = 0; i < hunters.size(); i++ ) {
             Bukkit.broadcastMessage(ChatColor.DARK_RED + "- " + hunters.get(i).getDisplayName());
         }
 
@@ -126,7 +141,7 @@ public class ManHunt extends GameManager {
                 Location loc = players.get(i).getLocation();
                 loc.setY(players.get(i).getWorld().getHighestBlockAt( players.get(i).getLocation().getBlockX(), players.get(i).getLocation().getBlockZ()).getY() + 1);
                 players.get(i).teleport(loc);
-                players.get(i).getInventory().addItem(inv.tracker);
+//                players.get(i).getInventory().addItem(inv.tracker);
             }
 
         }

@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class HunterSelection implements InventoryHolder {
+public class LifeSelection implements InventoryHolder {
 
     //Creating an inventory object
     public Inventory inv;
@@ -32,10 +32,10 @@ public class HunterSelection implements InventoryHolder {
     int inventorysize = 45;
 
     //This is the constructor
-    public HunterSelection(MinigamePlugin main) {
+    public LifeSelection(MinigamePlugin main) {
 
         //initializing the inventory
-        inv = Bukkit.createInventory(this, inventorysize, "Who will be a hunter?");//max size 54
+        inv = Bukkit.createInventory(this, inventorysize, "How many lives will the runners have?");//max size 54
         this.main = main;
         init(this.main);
 
@@ -51,9 +51,17 @@ public class HunterSelection implements InventoryHolder {
         ItemStack rim = createItem("None", Material.YELLOW_STAINED_GLASS_PANE, Collections.singletonList("Please select an option"));
 
         //This is an the confirming icon
-        ItemStack cancel = createItem("Cancel Selection", Material.RED_WOOL, Collections.singletonList("Select this to cancel the hunter selection."));
-        //This is an the closing icon
-        ItemStack confirm = createItem("Confirm Selection", Material.GREEN_WOOL, Collections.singletonList("Select this to confirm the hunter selection."));
+        ItemStack cancel = createItem("Cancel Selection", Material.BARRIER, Collections.singletonList("Select this to cancel the life selection."));
+
+        //This item sets the number of lives to 1
+        ItemStack one_life = createItem("One life", Material.GREEN_WOOL, Collections.singletonList("Select this to set the number of lives for a runner to 1."));
+
+        //This item sets the number of lives to 2
+        ItemStack two_lives = createItem("Two lives", Material.YELLOW_WOOL, Collections.singletonList("Select this to set the number of lives for a runner to 2."));
+
+        //This item sets the number of lives to 3
+        ItemStack three_lives = createItem("Three lives", Material.RED_WOOL, Collections.singletonList("Select this to set the number of lives for a runner to 3."));
+
 
 
         //Creating inventory rows
@@ -95,23 +103,22 @@ public class HunterSelection implements InventoryHolder {
                     inv.setItem(i + (f * 9), rim);
                 }
 
-                //placing the player heads
-                if (i > 0 && i < 8 && f > 0) {
 
-                    if (playernum >= available_player_list.size()) {} else {
-                    inv.setItem(i + (f*9), getHead(available_player_list.get(playernum)));
-                    playernum++;
-                    }
+
 
 
 
                 }
             }
 
+            //placing the lives
+            inv.setItem(3 + (9*2), one_life);
+            inv.setItem(4 + (9*2), two_lives);
+            inv.setItem(5 + (9*2), three_lives);
+
             inv.setItem(inventorysize - 1, cancel);
-            inv.setItem(inventorysize - 9, confirm);
         }
-    }
+
 
 
     //This method creates an item with the parameters name, material, and lore
@@ -123,16 +130,6 @@ public class HunterSelection implements InventoryHolder {
         item.setItemMeta(meta);
         return item;
 
-    }
-
-    //This method is intended to be used to grab the head of another player
-    private static ItemStack getHead(Player player) {
-        ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1, (short) 3);
-        SkullMeta meta = (SkullMeta) item.getItemMeta();
-        meta.setOwner(player.getDisplayName());
-        meta.setDisplayName(player.getDisplayName());
-        item.setItemMeta(meta);
-        return (item);
     }
 
     //This method is used to open the inventory

@@ -10,7 +10,7 @@ package com.MiracleSheep.MinigamePlugin.Games;
 
 //importing librairies and otherwise
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
-import com.MiracleSheep.MinigamePlugin.Tasks.BlockHuntPlayer;
+import com.MiracleSheep.MinigamePlugin.ObjectTypes.BlockHuntPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
