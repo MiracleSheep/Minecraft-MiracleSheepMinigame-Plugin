@@ -31,6 +31,9 @@ public class ManHunt extends GameManager {
     //integer that holds the number of lives that all runners start with
     public static int lives = 0;
 
+    //integer that holds the limit
+    public static int limit = 0;
+
     //players that will be the runner
     public static ArrayList<ManHuntPlayer> runners = new ArrayList<ManHuntPlayer>();
 
@@ -58,6 +61,17 @@ public class ManHunt extends GameManager {
                 runners.remove(i);
             }
         }
+        for (int i = 0 ; i < hunters.size(); i++)  {
+            if (hunters.get(i) == player) {
+                hunters.remove(i);
+            }
+        }
+        for (int i = 0 ; i < deadfolk.size(); i++)  {
+            if (deadfolk.get(i) == player) {
+                deadfolk.remove(i);
+            }
+        }
+        isWon();
     }
 
     @Override
@@ -69,6 +83,18 @@ public class ManHunt extends GameManager {
                     deadfolk.add(player);
                 }
             }
+            isWon();
+    }
+
+    //checks if the game is won and acts if it is
+    public void isWon() {
+        if (runners.size() == 0) {
+            onWon(1);
+        }
+        if (hunters.size() == 0) {
+            onWon(2);
+        }
+
     }
 
     //function that gets called when the state is inactive - works as a unique clanup functiuon
@@ -77,6 +103,7 @@ public class ManHunt extends GameManager {
         stopTimer();
         started = false;
         setGame(0);
+
         for (int i = 0 ; i < players.size() ; i++) {
             for (int j = 0; j < players.get(i).getInventory().getSize() ; j++) {
                 ItemStack item = players.get(i).getInventory().getItem(j);
@@ -91,6 +118,14 @@ public class ManHunt extends GameManager {
                 }
             }
         }
+        limit = 0;
+        lives = 0;
+        players.clear();
+        hunters.clear();
+        deadfolk.clear();
+        runners.clear();
+        WorldBorder wb = Bukkit.getWorld("world").getWorldBorder();
+        wb.reset();
     }
 
     //function that gets called when the state is waiting
@@ -105,6 +140,27 @@ public class ManHunt extends GameManager {
     //function that gets called when the state is starting
     @Override
     public void onStarting() {
+
+
+        //creating the world border if that limit had been set
+        if (limit == 1) {
+            Location l = Bukkit.getWorld("world").getSpawnLocation();
+            Location neareststronghold = Bukkit.getWorld("world").locateNearestStructure(l, StructureType.STRONGHOLD,72,true);
+            WorldBorder wb = Bukkit.getWorld("world").getWorldBorder();
+            wb.setCenter(l);
+
+            double neareststronghold_x = neareststronghold.getX();
+            double neareststronghold_z = neareststronghold.getZ();
+
+            if (neareststronghold_x >= neareststronghold_z) {
+                wb.setSize((neareststronghold_x*2) + main.getConfig().getInt("ManhuntBorderDistance"));
+            } else if (neareststronghold_x <= neareststronghold_z) {
+                wb.setSize((neareststronghold_z*2) + main.getConfig().getInt("ManhuntBorderDistance"));
+            }
+
+
+
+        }
 
         // putting all players not in the hunters into the runners
         for (int i = 0 ; i < players.size() ; i++) {
@@ -164,9 +220,20 @@ public class ManHunt extends GameManager {
     }
 
     //function that gets called when the state is won
-    @Override
-    public void onWon() {
-
+    public void onWon(int whowon) {
+        if (whowon == 0) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Ender Dragon has been defeated!");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Runners have won!");
+            setState(GameState.INACTIVE);
+        } else if (whowon == 1) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: All the runners have died!");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Hunters have won!");
+            setState(GameState.INACTIVE);
+        } else if (whowon == 2) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: All the hunters have given up!");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Runners have won!");
+            setState(GameState.INACTIVE);
+        }
     }
 
 

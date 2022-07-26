@@ -83,11 +83,11 @@ public class GameManager {
         if (intGame == 0) {
             setName("None");
         } else if (intGame == 1) {
-            setName("Block Hunt");
+            setName("BlockHunt");
         } else if (intGame == 2) {
-            setName("Man Hunt");
+            setName("ManHunt");
         } else if (intGame == 3) {
-            setName("Death Swap");
+            setName("DeathSwap");
         }
         Game = intGame;
 

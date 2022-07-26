@@ -15,6 +15,12 @@ Enabled: true
 #This controls how long the grace time will be set for.
 ManhuntGraceTimer: 60
 
+# This controls how far runners can be before the hunter is allowed to teleport closer to them
+ManhuntTeleportDistance: 400
+
+#This controls how far away the border should be from the stronghold
+ManhuntBorderDistance: 500
+
 #
 #
 # This section is for deathswap

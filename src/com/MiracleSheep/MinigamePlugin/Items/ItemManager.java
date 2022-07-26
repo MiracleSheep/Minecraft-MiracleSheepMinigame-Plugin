@@ -13,6 +13,8 @@ package com.MiracleSheep.MinigamePlugin.Items;
 //importing libraries and packages
 import com.MiracleSheep.MinigamePlugin.Games.ManHunt;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -64,27 +66,37 @@ public class ItemManager {
 
         //this part of the code checks all the locations of the runners and the hunter requesting, and then gets the closest player
         //setting the initial location to the first player in the runner list
-        Location l = manhunt.runners.get(0).player.getLocation();
 
-        //getting the total x, y, z coordinates from the hunter
-        double hunter_x = hunter.getLocation().getX();
-        double hunter_y = hunter.getLocation().getY();
-        double hunter_z = hunter.getLocation().getZ();
+        Location closestLocation = manhunt.runners.get(0).player.getLocation();
+        Location hunterLocation = hunter.getLocation();
+        Player closestPlayer = manhunt.runners.get(0).player;
+        double closestDist;
 
         for (int i = 0; i < manhunt.runners.size(); i++)  {
-            double l_distance = Math.sqrt(Math.pow((l.getX()-hunter_x),2) + Math.pow((l.getY()-hunter_y),2) + Math.pow((l.getZ()-hunter_z),2));
-            double new_distance = Math.sqrt(Math.pow((manhunt.runners.get(i).player.getLocation().getX()-hunter_x),2) + Math.pow((manhunt.runners.get(i).player.getLocation().getY()-hunter_y),2) + Math.pow((manhunt.runners.get(i).player.getLocation().getY()-hunter_z),2));
+            closestDist = closestLocation.distance(hunterLocation);
 
-            if (new_distance<l_distance) {
-                l = manhunt.runners.get(i).player.getLocation();
+            if (manhunt.runners.get(i).player.getLocation().distance(hunterLocation) < closestDist) {
+                closestDist = manhunt.runners.get(i).player.getLocation().distance(hunterLocation);
+                closestPlayer =  manhunt.runners.get(i).player;
+                closestLocation = manhunt.runners.get(i).player.getLocation();
+
             }
         }
 
-        l.setY(0);
-        l.getBlock().setType(Material.LODESTONE);
+        if (manhunt.limit == 2) {
+            if (closestLocation.distance(hunterLocation) > main.getConfig().getInt("ManhuntTeleportDistance")) {
+                hunter.teleport(closestLocation.add(main.getConfig().getInt("ManhuntTeleportDistance"),0,0));
+                Location loc = hunter.getLocation();
+                loc.setY(hunter.getWorld().getHighestBlockAt( hunter.getLocation().getBlockX(), hunter.getLocation().getBlockZ()).getY() + 1);
+                hunter.teleport(loc);
+            }
+        }
+
+        closestLocation.setY(0);
+        closestLocation.getBlock().setType(Material.LODESTONE);
         meta.setCustomModelData(123);
         meta.setDisplayName("Tracker");
-        meta.setLodestone(l);
+        meta.setLodestone(closestLocation);
         meta.setLodestoneTracked(true);
         item.setItemMeta(meta);
         //setting the class variable testitem to the item in this function

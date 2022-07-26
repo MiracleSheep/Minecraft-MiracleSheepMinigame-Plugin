@@ -13,6 +13,7 @@ package com.MiracleSheep.MinigamePlugin.Commands;
 import com.MiracleSheep.MinigamePlugin.Games.*;
 import com.MiracleSheep.MinigamePlugin.Inventory.HunterSelection;
 import com.MiracleSheep.MinigamePlugin.Inventory.LifeSelection;
+import com.MiracleSheep.MinigamePlugin.Inventory.LimitSelection;
 import com.MiracleSheep.MinigamePlugin.Inventory.MainMenu;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
 import org.bukkit.Bukkit;
@@ -201,7 +202,7 @@ public class PluginCommands implements CommandExecutor {
                             if (manager.getGame() == 1) {
                                 blockhunt.setState(GameState.STARTING);
                             } else if (manager.getGame() == 2) {
-                                LifeSelection gui = new LifeSelection(main);
+                                LimitSelection gui = new LimitSelection(main);
                                 player.openInventory(gui.getInventory());
                             } else if (manager.getGame() == 3) {
                                 manswap.setState(GameState.STARTING);

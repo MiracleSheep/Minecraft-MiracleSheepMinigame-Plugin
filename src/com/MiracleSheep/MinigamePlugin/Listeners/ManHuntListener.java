@@ -126,10 +126,7 @@ public class ManHuntListener implements Listener {
         ManHunt manhunt = new ManHunt(main);
         if(e.getEntity() instanceof EnderDragon){
             if (manhunt.getGameState() == GameState.ACTIVE && manhunt.getGame() == 2) {
-            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Ender Dragon has been defeated!");
-            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Runners have won!");
-            manhunt.setState(GameState.INACTIVE);
-
+            manhunt.onWon(0);
             }
 
 
@@ -158,7 +155,7 @@ public class ManHuntListener implements Listener {
                         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: They have " + manhunt.runners.get(i).lives + "" + ChatColor.GOLD + " lives remaining.");
 
                          if (manhunt.runners.get(i).lives <= 0) {
-                             Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + "has been eliminated from ManHunt!");
+                             Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + " has been eliminated from ManHunt!");
                              manhunt.playerElim(player);
                          }
 
@@ -290,6 +287,7 @@ public class ManHuntListener implements Listener {
                                     if (is_in_another_dimension == true) {
                                         player.sendMessage(ChatColor.RED + "You are not in the same dimension!");
                                     } else {
+                                        ItemManager i = new ItemManager(main);
                                         i.createTracker(player);
                                         player.getInventory().setItemInMainHand(i.tracker);
                                     }

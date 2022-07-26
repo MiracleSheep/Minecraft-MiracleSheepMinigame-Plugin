@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class LifeSelection implements InventoryHolder {
+public class LimitSelection implements InventoryHolder {
 
     //Creating an inventory object
     public Inventory inv;
@@ -32,10 +32,10 @@ public class LifeSelection implements InventoryHolder {
     int inventorysize = 45;
 
     //This is the constructor
-    public LifeSelection(MinigamePlugin main) {
+    public LimitSelection(MinigamePlugin main) {
 
         //initializing the inventory
-        inv = Bukkit.createInventory(this, inventorysize, "Number of lives per runner");//max size 54
+        inv = Bukkit.createInventory(this, inventorysize, "Game limit?");//max size 54
         this.main = main;
         init(this.main);
 
@@ -51,16 +51,16 @@ public class LifeSelection implements InventoryHolder {
         ItemStack rim = createItem("None", Material.YELLOW_STAINED_GLASS_PANE, Collections.singletonList("Please select an option"));
 
         //This is an the confirming icon
-        ItemStack cancel = createItem("Cancel Selection", Material.BARRIER, Collections.singletonList("Select this to cancel the life selection."));
+        ItemStack cancel = createItem("Cancel Selection", Material.BARRIER, Collections.singletonList("Select this to cancel the limit selection."));
 
         //This item sets the number of lives to 1
-        ItemStack one_life = createItem("One life", Material.GREEN_WOOL, Collections.singletonList("Select this to set the number of lives for a runner to 1."));
+        ItemStack border = createItem("Border", Material.IRON_BARS, Collections.singletonList("Make a world border that includes the end stronghold."));
 
         //This item sets the number of lives to 2
-        ItemStack two_lives = createItem("Two lives", Material.YELLOW_WOOL, Collections.singletonList("Select this to set the number of lives for a runner to 2."));
+        ItemStack teleport = createItem("Teleport", Material.ENDER_PEARL, Collections.singletonList("Teleports hunters closer if they are too far away upon clicking the compass."));
 
         //This item sets the number of lives to 3
-        ItemStack three_lives = createItem("Three lives", Material.RED_WOOL, Collections.singletonList("Select this to set the number of lives for a runner to 3."));
+        ItemStack freedom = createItem("Freedom", Material.ELYTRA, Collections.singletonList("No limits, runners can run as far as they want."));
 
 
 
@@ -108,16 +108,16 @@ public class LifeSelection implements InventoryHolder {
 
 
 
-                }
             }
-
-            //placing the lives
-            inv.setItem(3 + (9*2), one_life);
-            inv.setItem(4 + (9*2), two_lives);
-            inv.setItem(5 + (9*2), three_lives);
-
-            inv.setItem(inventorysize - 1, cancel);
         }
+
+        //placing the lives
+        inv.setItem(3 + (9*2), border);
+        inv.setItem(4 + (9*2), teleport);
+        inv.setItem(5 + (9*2), freedom);
+
+        inv.setItem(inventorysize - 1, cancel);
+    }
 
 
 

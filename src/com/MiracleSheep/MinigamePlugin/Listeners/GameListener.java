@@ -14,6 +14,7 @@ package com.MiracleSheep.MinigamePlugin.Listeners;
 import com.MiracleSheep.MinigamePlugin.Games.*;
 import com.MiracleSheep.MinigamePlugin.Inventory.HunterSelection;
 import com.MiracleSheep.MinigamePlugin.Inventory.LifeSelection;
+import com.MiracleSheep.MinigamePlugin.Inventory.LimitSelection;
 import com.MiracleSheep.MinigamePlugin.Inventory.MainMenu;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
 import org.bukkit.Bukkit;
@@ -149,12 +150,15 @@ public class GameListener implements Listener {
                         player.sendMessage(ChatColor.GREEN + "There was an error making this player a hunter");
                     }
                         player.closeInventory();
-                        HunterSelection gui = new HunterSelection(main);
-                        player.openInventory(gui.getInventory());
+                    HunterSelection gui = new HunterSelection(main);
+                    player.openInventory(gui.getInventory());
+
                 }  else if (e.getCurrentItem().getType() == Material.RED_WOOL) {
                     //outputting the choice to the player
-                    player.sendMessage(ChatColor.GREEN + "Canceled hunter selection!");
+                    player.sendMessage(ChatColor.GREEN + "Canceled option selection!");
                     manhunt.hunters.clear();
+                    manhunt.lives = 0;
+                    manhunt.limit = 0;
                     player.closeInventory();
                 } else if (e.getCurrentItem().getType() == Material.GREEN_WOOL) {
                     //outputting the choice to the player
@@ -198,6 +202,54 @@ public class GameListener implements Listener {
                 manhunt.lives = 3;
                 HunterSelection gui = new HunterSelection(main);
                 player.openInventory(gui.getInventory());
+            }   else if (e.getCurrentItem().getType() == Material.BARRIER) {
+                //outputting the choice to the player
+                player.sendMessage(ChatColor.GREEN + "Canceled option selection!");
+                manhunt.hunters.clear();
+                manhunt.lives = 0;
+                manhunt.limit = 0;
+                player.closeInventory();
+            }
+
+
+
+        }
+
+        if (e.getClickedInventory().getHolder() instanceof LimitSelection) {
+            e.setCancelled(true);
+
+            Player player = (Player) e.getWhoClicked();
+
+            //Checking what the player clicked on
+            if (e.getCurrentItem().getType() == Material.WHITE_STAINED_GLASS_PANE || e.getCurrentItem().getType() == Material.YELLOW_STAINED_GLASS_PANE) {
+                //outputting the choice to the player
+                player.sendMessage(ChatColor.RED + "This is not an option");
+            } else if (e.getCurrentItem().getType() == Material.IRON_BARS) {
+                manhunt.limit = 1;
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: There will be a world border that encompasses the stronghold.");
+                player.closeInventory();
+                LifeSelection gui = new LifeSelection(main);
+                player.openInventory(gui.getInventory());
+
+            }  else if (e.getCurrentItem().getType() == Material.ENDER_PEARL) {
+                manhunt.limit = 2;
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Hunters will be teleported closer to Runners if they are too far upon right clicking their compass");
+                player.closeInventory();
+                LifeSelection gui = new LifeSelection(main);
+                player.openInventory(gui.getInventory());
+            }  else if (e.getCurrentItem().getType() == Material.ELYTRA) {
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: There will be no limits. Runners may go as far as they please.");
+                player.closeInventory();
+                manhunt.limit = 0;
+                LifeSelection gui = new LifeSelection(main);
+                player.openInventory(gui.getInventory());
+            }   else if (e.getCurrentItem().getType() == Material.BARRIER) {
+                //outputting the choice to the player
+                player.sendMessage(ChatColor.GREEN + "Canceled option selection!");
+                manhunt.hunters.clear();
+                manhunt.lives = 0;
+                manhunt.limit = 0;
+                player.closeInventory();
             }
 
 
