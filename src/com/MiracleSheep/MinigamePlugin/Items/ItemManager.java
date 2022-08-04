@@ -13,10 +13,7 @@ package com.MiracleSheep.MinigamePlugin.Items;
 //importing libraries and packages
 import com.MiracleSheep.MinigamePlugin.Games.ManHunt;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
@@ -83,15 +80,6 @@ public class ItemManager {
             }
         }
 
-        if (manhunt.limit == 2) {
-            if (closestLocation.distance(hunterLocation) > main.getConfig().getInt("ManhuntTeleportDistance")) {
-                hunter.teleport(closestLocation.add(main.getConfig().getInt("ManhuntTeleportDistance"),0,0));
-                Location loc = hunter.getLocation();
-                loc.setY(hunter.getWorld().getHighestBlockAt( hunter.getLocation().getBlockX(), hunter.getLocation().getBlockZ()).getY() + 1);
-                hunter.teleport(loc);
-            }
-        }
-
         closestLocation.setY(0);
         closestLocation.getBlock().setType(Material.LODESTONE);
         meta.setCustomModelData(123);
@@ -101,6 +89,46 @@ public class ItemManager {
         item.setItemMeta(meta);
         //setting the class variable testitem to the item in this function
         tracker = item;
+
+        if (manhunt.limit == 2) {
+            if (closestLocation.distance(hunterLocation) > main.getConfig().getInt("ManhuntTeleportDistance")) {
+
+                if (hunter.getWorld().getEnvironment().equals(World.Environment.NETHER)) {
+                    hunter.teleport(closestLocation.add(main.getConfig().getInt("ManhuntTeleportDistance"),0,0));
+                    boolean issafe = false;
+                    Location loc = hunter.getLocation();
+                    while (!issafe) {
+
+                    for (int j = 3 ; j < 125 ; j++) {
+
+                        if (!issafe) {
+                            loc.setY(j);
+                            if (loc.subtract(0, 1, 0).getBlock().getType().isSolid() && loc.getBlock().getType().isAir() && loc.add(0,1,0).getBlock().getType().isAir()) {
+                                issafe = true;
+                            }
+
+
+
+                        }
+
+                    }
+                        if (!issafe) {
+                            loc.add(1,0,0);
+                        }
+
+                    }
+                    hunter.teleport(loc);
+
+                } else {
+                hunter.teleport(closestLocation.add(main.getConfig().getInt("ManhuntTeleportDistance"),0,0));
+                Location loc = hunter.getLocation();
+                loc.setY(hunter.getWorld().getHighestBlockAt( hunter.getLocation().getBlockX(), hunter.getLocation().getBlockZ()).getY() + 1);
+                hunter.teleport(loc);
+                }
+            }
+        }
+
+
 
     }
 
