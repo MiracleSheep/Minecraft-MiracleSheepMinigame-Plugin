@@ -19,6 +19,8 @@ import com.MiracleSheep.MinigamePlugin.Items.ItemManager;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
 import com.MiracleSheep.MinigamePlugin.ObjectTypes.ManHuntPlayer;
 import org.bukkit.*;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,7 +35,13 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 //this is the class that listens for hunt events
 public class ManHuntListener implements Listener {
@@ -133,6 +141,28 @@ public class ManHuntListener implements Listener {
         }
     }
 
+    //on player respawn event
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent e) {
+        ManHunt manhunt = new ManHunt(main);
+        if (!(e.getPlayer() instanceof Player)) {return;}
+        Player player = (Player) e.getPlayer();
+
+        if (manhunt.getGameState() == GameState.ACTIVE && manhunt.getGame() == 2) {
+
+            if (manhunt.players.contains(player)) {
+
+                if (manhunt.hunters.contains(player) && manhunt.hunterKeep == true) {
+                    restoreInventory(player);
+                } else if (!(manhunt.hunters.contains(player)) && !(manhunt.deadfolk.contains(player)) && manhunt.runnerKeep == true) {
+                    restoreInventory(player);
+                }
+            }
+        }
+
+    }
+
+
     //on player death event
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e){
@@ -143,6 +173,12 @@ public class ManHuntListener implements Listener {
         if (manhunt.getGameState() == GameState.ACTIVE && manhunt.getGame() == 2) {
 
             if (manhunt.players.contains(player)) {
+
+                if (manhunt.hunters.contains(player) && manhunt.hunterKeep == true) {
+                    saveInventory(player);
+                } else if (!(manhunt.hunters.contains(player)) && !(manhunt.deadfolk.contains(player)) && manhunt.runnerKeep == true) {
+                    saveInventory(player);
+                }
 
             if (!(manhunt.hunters.contains(player)) && !(manhunt.deadfolk.contains(player))) {
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The runner " + player.getDisplayName() + "" + ChatColor.GOLD + " has been killed!");
@@ -307,9 +343,32 @@ public class ManHuntListener implements Listener {
 
     }
 
+    public void saveInventory(Player player) {
+        File f = new File(main.getDataFolder().getAbsolutePath(), player.getName() + ".yml");
+        FileConfiguration c = YamlConfiguration.loadConfiguration(f);
+        c.set("inventory.armor", player.getInventory().getArmorContents());
+        c.set("inventory.content", player.getInventory().getContents());
+        try {
+            c.save(f);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-
-
+    public void restoreInventory(Player player) {
+        File f = new File(main.getDataFolder().getAbsolutePath(), player.getName() + ".yml");
+        FileConfiguration c = YamlConfiguration.loadConfiguration(f);
+        ItemStack[] content = ((List<ItemStack>) c.get("inventory.armor")).toArray(new ItemStack[0]);
+        player.getInventory().setArmorContents(content);
+        content = ((List<ItemStack>) c.get("inventory.content")).toArray(new ItemStack[0]);
+        player.getInventory().setContents(content);
+    }
 
 }
+
+
+
+
+
+
 

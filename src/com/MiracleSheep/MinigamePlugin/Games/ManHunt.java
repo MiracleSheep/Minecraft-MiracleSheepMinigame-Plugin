@@ -25,6 +25,14 @@ public class ManHunt extends GameManager {
 
 
     //integers for the timer
+
+    //boolean that hold whether or not the  hunter will keep their inventory
+    public static boolean hunterKeep = false;
+
+
+    public static boolean runnerKeep = false;
+
+
     int time;
     public static int taskID3;
 

@@ -36,15 +36,10 @@ public class ItemManager {
 
     }
 
-
-
-
 //    //this function initializes all the items needed by calling their create functions
 //    public static void init() {
 //        createTracker();
 //    }
-
-
 
     //This method is responsable for creating a single item it creates a nether star in this example
     public static void createTracker(Player hunter) {

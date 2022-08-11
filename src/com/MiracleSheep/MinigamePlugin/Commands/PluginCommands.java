@@ -202,6 +202,14 @@ public class PluginCommands implements CommandExecutor {
                             if (manager.getGame() == 1) {
                                 blockhunt.setState(GameState.STARTING);
                             } else if (manager.getGame() == 2) {
+                                manhunt.hunters.clear();
+                                manhunt.hunterKeep = false;
+                                manhunt.runnerKeep = false;
+                                manhunt.lives = 0;
+                                manhunt.limit = 0;
+                                manhunt.runners.clear();
+                                manhunt.deadfolk.clear();
+
                                 LimitSelection gui = new LimitSelection(main);
                                 player.openInventory(gui.getInventory());
                             } else if (manager.getGame() == 3) {
