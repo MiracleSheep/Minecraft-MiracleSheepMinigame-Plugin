@@ -154,7 +154,7 @@ public class ManHunt extends GameManager {
         deadfolk.clear();
         runners.clear();
         WorldBorder wb = Bukkit.getWorld("world").getWorldBorder();
-        wb.reset();
+        wb.setSize(30000000);
     }
 
     //function that gets called when the state is waiting
@@ -172,6 +172,7 @@ public class ManHunt extends GameManager {
 
 
         //creating the world border if that limit had been set
+        Bukkit.broadcastMessage(ChatColor.GOLD + "limit:" + limit);
         if (limit == 1) {
             Location l = Bukkit.getWorld("world").getSpawnLocation();
             Location neareststronghold = Bukkit.getWorld("world").locateNearestStructure(l, StructureType.STRONGHOLD,72,true);
