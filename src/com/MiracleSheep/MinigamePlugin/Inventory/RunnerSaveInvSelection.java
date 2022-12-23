@@ -35,7 +35,7 @@ public class RunnerSaveInvSelection implements InventoryHolder {
     public RunnerSaveInvSelection(MinigamePlugin main) {
 
         //initializing the inventory
-        inv = Bukkit.createInventory(this, inventorysize, "Should the runner keep their inventory?");//max size 54
+        inv = Bukkit.createInventory(this, inventorysize, "KeepInventory for Runner?");//max size 54
         this.main = main;
         init(this.main);
 

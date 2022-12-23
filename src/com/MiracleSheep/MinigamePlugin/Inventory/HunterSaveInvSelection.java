@@ -36,7 +36,7 @@ public class HunterSaveInvSelection implements InventoryHolder {
      (MinigamePlugin main) {
 
         //initializing the inventory
-        inv = Bukkit.createInventory(this, inventorysize, "Should the hunter keep their inventory?");//max size 54
+        inv = Bukkit.createInventory(this, inventorysize, "KeepInventory for Hunter?");//max size 54
         this.main = main;
         init(this.main);
 

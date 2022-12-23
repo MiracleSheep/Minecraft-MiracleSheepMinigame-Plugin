@@ -89,6 +89,7 @@ public class ManHunt extends GameManager {
                 if (runners.get(i).player == player) {
                     runners.remove(i);
                     deadfolk.add(player);
+                    player.setGameMode(GameMode.SPECTATOR);
                 }
             }
             isWon();
@@ -96,11 +97,16 @@ public class ManHunt extends GameManager {
 
     //checks if the game is won and acts if it is
     public void isWon() {
-        if (runners.size() == 0) {
-            onWon(1);
-        }
-        if (hunters.size() == 0) {
-            onWon(2);
+        //checking if the game is still manhunt
+        if (this.getGame() == 2) {
+
+            if (runners.size() == 0) {
+                onWon(1);
+            }
+            if (hunters.size() == 0) {
+                onWon(2);
+            }
+
         }
 
     }
@@ -112,6 +118,21 @@ public class ManHunt extends GameManager {
         started = false;
         setGame(0);
 
+
+        Location spawn = Bukkit.getWorld("world").getSpawnLocation();
+
+        //This loop sets all players out of spectatormode and returns everyone to spawn
+        for (int i = 0 ; i < players.size() ; i++) {
+            players.get(i).setGameMode(GameMode.SURVIVAL);
+            players.get(i).setHealth(20);
+            players.get(i).setFoodLevel(20);
+            players.get(i).setSaturation(20);
+            players.get(i).teleport(spawn);
+
+        }
+
+
+        // This loop removes the compass from any player's inventory
         for (int i = 0 ; i < players.size() ; i++) {
             for (int j = 0; j < players.get(i).getInventory().getSize() ; j++) {
                 ItemStack item = players.get(i).getInventory().getItem(j);
@@ -234,7 +255,7 @@ public class ManHunt extends GameManager {
             Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Runners have won!");
             setState(GameState.INACTIVE);
         } else if (whowon == 1) {
-            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: All the runners have died!");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: All the runners have died or given up!");
             Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Hunters have won!");
             setState(GameState.INACTIVE);
         } else if (whowon == 2) {
