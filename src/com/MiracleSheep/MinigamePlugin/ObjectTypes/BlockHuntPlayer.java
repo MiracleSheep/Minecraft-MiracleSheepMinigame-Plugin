@@ -4,7 +4,7 @@
  * @version: Created August 10th 2021
  */
 
-package com.MiracleSheep.MinigamePlugin.Tasks;
+package com.MiracleSheep.MinigamePlugin.ObjectTypes;
 
 import org.bukkit.entity.Player;
 

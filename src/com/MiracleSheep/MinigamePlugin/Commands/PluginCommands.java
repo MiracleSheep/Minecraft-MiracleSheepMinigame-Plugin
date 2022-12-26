@@ -11,6 +11,9 @@ package com.MiracleSheep.MinigamePlugin.Commands;
 
 //importing libraries and other packages
 import com.MiracleSheep.MinigamePlugin.Games.*;
+import com.MiracleSheep.MinigamePlugin.Inventory.HunterSelection;
+import com.MiracleSheep.MinigamePlugin.Inventory.LifeSelection;
+import com.MiracleSheep.MinigamePlugin.Inventory.LimitSelection;
 import com.MiracleSheep.MinigamePlugin.Inventory.MainMenu;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
 import org.bukkit.Bukkit;
@@ -41,7 +44,7 @@ public class PluginCommands implements CommandExecutor {
         GameManager manager = new GameManager(main);
         BlockHunt blockhunt  = new BlockHunt(main);
         ManHunt manhunt = new ManHunt(main);
-        ManSwap manswap = new ManSwap(main);
+        DeathSwap manswap = new DeathSwap(main);
 
         //Checking if the sender of the command is not a player and returning if true
         if (!(sender instanceof Player)) {
@@ -52,8 +55,20 @@ public class PluginCommands implements CommandExecutor {
         //Checking if the commmand sent is equal to the string and calling if it is
         if (cmd.getName().equalsIgnoreCase("minigame")) {
 
+
+
             //Getting the sender of the command
             Player player = (Player) sender;
+
+            if (args.length != 0) {
+                player.sendMessage(ChatColor.RED + "Too many arguments!");
+                return true;
+            }
+
+            if (!sender.hasPermission("minigame.all")) {
+                player.sendMessage(ChatColor.RED + "You do not have permission to play minigames!");
+                return true;
+            }
 
             //opening the menu when the player enters this command
             MainMenu gui = new MainMenu(main);
@@ -65,8 +80,20 @@ public class PluginCommands implements CommandExecutor {
         //This is a join command
         if (cmd.getName().equalsIgnoreCase("join")) {
 
+
+
             //Getting the sender of the command
             Player player = (Player) sender;
+
+            if (args.length != 0) {
+                player.sendMessage(ChatColor.RED + "Too many arguments!");
+                return true;
+            }
+
+            if (!sender.hasPermission("minigame.all")) {
+                player.sendMessage(ChatColor.RED + "You do not have permission to play minigames!");
+                return true;
+            }
 
             if (player == manager.getStartPlayer()) {
                 player.sendMessage(ChatColor.GREEN + "You are the host of this game! There is no need to join it.");
@@ -103,8 +130,20 @@ public class PluginCommands implements CommandExecutor {
         //This is a join command
         if (cmd.getName().equalsIgnoreCase("quit")) {
 
+
+
             //Getting the sender of the command
             Player player = (Player) sender;
+
+            if (args.length != 0) {
+                player.sendMessage(ChatColor.RED + "Too many arguments!");
+                return true;
+            }
+
+            if (!sender.hasPermission("minigame.all")) {
+                player.sendMessage(ChatColor.RED + "You do not have permission to play minigames!");
+                return true;
+            }
 
             if (manager.players.contains(player)) {
 
@@ -132,8 +171,20 @@ public class PluginCommands implements CommandExecutor {
         //This is a start command to start the minigame
         if (cmd.getName().equalsIgnoreCase("start")) {
 
+
+
             //Getting the sender of the command
             Player player = (Player) sender;
+
+            if (args.length != 0) {
+                player.sendMessage(ChatColor.RED + "Too many arguments!");
+                return true;
+            }
+
+            if (!sender.hasPermission("minigame.all")) {
+                player.sendMessage(ChatColor.RED + "You do not have permission to play minigames!");
+                return true;
+            }
 
             if (manager.getGame() != 0) {
 
@@ -151,9 +202,21 @@ public class PluginCommands implements CommandExecutor {
                             if (manager.getGame() == 1) {
                                 blockhunt.setState(GameState.STARTING);
                             } else if (manager.getGame() == 2) {
-                                manhunt.setState(GameState.STARTING);
+                                manhunt.hunters.clear();
+                                manhunt.hunterKeep = false;
+                                manhunt.runnerKeep = false;
+                                manhunt.lives = 0;
+                                manhunt.limit = 0;
+                                manhunt.runners.clear();
+                                manhunt.deadfolk.clear();
+
+                                LimitSelection gui = new LimitSelection(main);
+                                player.openInventory(gui.getInventory());
                             } else if (manager.getGame() == 3) {
                                 manswap.setState(GameState.STARTING);
+                                //opening the menu to select hunters
+
+
                             }
 
                         } else if (manager.getGameState() != GameState.WAITING) {
@@ -187,6 +250,16 @@ public class PluginCommands implements CommandExecutor {
             //Getting the sender of the command
             Player player = (Player) sender;
 
+            if (args.length != 0) {
+                player.sendMessage(ChatColor.RED + "Too many arguments!");
+                return true;
+            }
+
+            if (!sender.hasPermission("minigame.all")) {
+                player.sendMessage(ChatColor.RED + "You do not have permission to play minigames!");
+                return true;
+            }
+
             if (manager.getGame() != 0) {
 
 
@@ -199,7 +272,7 @@ public class PluginCommands implements CommandExecutor {
 
                 if (manager.getGame() != 0) {
                     player.sendMessage(ChatColor.GREEN + "Cancelling " + manager.getName() + "...");
-                    Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + manager.getStartPlayer().getDisplayName() + " has canceled " + manager.getName() + "!");
+                    Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + manager.getStartPlayer().getDisplayName() + "" + ChatColor.GOLD + " has canceled " + manager.getName() + "!");
                     if (manager.getGame() == 1) {
                         blockhunt.setState(GameState.INACTIVE);
                     } else if (manager.getGame() == 2) {
@@ -223,6 +296,32 @@ public class PluginCommands implements CommandExecutor {
 
 
         }
+
+
+        //This is a cancel command
+        if (cmd.getName().equalsIgnoreCase("minigamehelp")) {
+
+            //Getting the sender of the command
+            Player player = (Player) sender;
+
+            if (args.length != 0) {
+                player.sendMessage(ChatColor.RED + "Too many arguments!");
+                return true;
+            }
+
+            Bukkit.broadcastMessage(ChatColor.GOLD + "Here are the commands:");
+            Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "/minigame - Gets the minigame menu.");
+            Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "/start - Starts the current minigame.");
+            Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "/cancel - Cancels the current minigame.");
+            Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "/join - Joins the current minigame.");
+            Bukkit.broadcastMessage(ChatColor.LIGHT_PURPLE + "/quit - Quits the current minigame.");
+
+
+
+        }
+
+
+
         //Returning from the function if none of the commands matched
         return true;
     }

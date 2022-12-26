@@ -1,5 +1,5 @@
 /**
- * Description: This is a manager class for the Man Swap minigame
+ * Description: This is a manager class for the Death Swap minigame
  *
  * @author: John Khalife
  * @version: Created August 10th 2021
@@ -24,14 +24,14 @@ import java.util.List;
 
 
 //this is the manager class
-public class ManSwap extends GameManager {
+public class DeathSwap extends GameManager {
 
     //integers for the timer
-    int time;
+    public static int time;
     public static int taskID2;
 
     //passing the instance of the main class
-    public ManSwap(MinigamePlugin main) {
+    public DeathSwap(MinigamePlugin main) {
         super(main);
     }
 
@@ -46,7 +46,7 @@ public class ManSwap extends GameManager {
     public void onWaiting() {
         setGame(3);
         players.add(getStartPlayer());
-        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + getStartPlayer().getDisplayName() + " has started a game of " + getName() + "!");
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + getStartPlayer().getDisplayName() + "" + ChatColor.GOLD + " has started a game of " + getName() + "!");
         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Anyone who wants to play should enter the command /join!");
 
     }
@@ -55,15 +55,30 @@ public class ManSwap extends GameManager {
     @Override
     public void onStarting() {
 
-        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Man Swap has begun!");
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Death Swap has begun!");
+        for (int i = 0 ; i < players.size() ; i++) {
+            players.get(i).setHealth(20);
+            players.get(i).setFoodLevel(20);
+        }
         setState(GameState.ACTIVE);
 
+    }
+
+    //function that says what do to when a player needs to be removed from the game
+    @Override
+    public void removeplayer(Player player) {
+        players.remove(player);
+    }
+
+    //method for when a player gets eliminated
+    @Override
+    public void playerElim(Player player) {
+        players.remove(player);
     }
 
     //function that gets called when the state is active
     @Override
     public void onActive() {
-
         run();
 
     }
@@ -71,7 +86,7 @@ public class ManSwap extends GameManager {
     //function that gets called when the state is transition
     @Override
     public void onTransition() {
-
+        time = 30;
         setState(GameState.ACTIVE);
     }
 
@@ -88,7 +103,7 @@ public class ManSwap extends GameManager {
 
         if (players.size() == 1) {
 
-            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + players.get(0).getDisplayName() + " Wins the game!");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + players.get(0).getDisplayName() + "" + ChatColor.GOLD + " Wins the game!");
             setState(GameState.INACTIVE);
 
         } else if (players.size() == 0) {
@@ -101,20 +116,13 @@ public class ManSwap extends GameManager {
 
     }
 
-    //method to stop the timer
-    public void stopTimer(boolean restart) {
-        Bukkit.getScheduler().cancelTask(taskID2);
 
-        if (restart) {
-            setState(GameState.TRANSITION);
-        }
-    }
 
 
 
     public void run() {
 
-        setTimer(main.getConfig().getInt("ManSwapTimer"));
+        setTimer(main.getConfig().getInt("DeathSwapTimer"));
         startTimer();
 
 
@@ -154,11 +162,7 @@ public class ManSwap extends GameManager {
                     Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "Time is up!");
                     swap();
                     stopTimer(true);
-
-                    return;
                 }
-
-
 
                 time = time - 1;
 
@@ -182,10 +186,9 @@ public class ManSwap extends GameManager {
             return;
         }
 
-        //Collections.shuffle(players);
+        Collections.shuffle(players);
         for (int i = 0; i < players.size(); i += 2) {
-            if (players.size() - i == 3) {
-                Bukkit.broadcastMessage("swap three");
+            if ((players.size() - i) == 3) {
                 //swap the last three players instead
                 Player one = players.get(i);
                 Player two = players.get(i+1);
@@ -198,11 +201,11 @@ public class ManSwap extends GameManager {
                 one.teleport(loc2);
                 two.teleport(loc3);
                 three.teleport(loc);
+                i = players.size();
 
 
             } else {
 
-                Bukkit.broadcastMessage("swap two");
                 Player one = players.get(i);
                 Player two = players.get(i + 1);
 
@@ -212,6 +215,19 @@ public class ManSwap extends GameManager {
                 one.teleport(loc2);
                 two.teleport(loc);
                 //teleport one to two, and two to one.
+            }
+        }
+    }
+
+    //method to stop the timer
+    public void stopTimer(boolean restart) {
+        Bukkit.getScheduler().cancelTask(taskID2);
+        if (restart) {
+            setState(GameState.TRANSITION);
+        } else {
+            for (int i = 0 ; i < players.size() ; i++) {
+                players.get(i).setHealth(20);
+                players.get(i).setFoodLevel(20);
             }
         }
     }

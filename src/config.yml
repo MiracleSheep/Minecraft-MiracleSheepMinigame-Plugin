@@ -1,3 +1,8 @@
+# Note:
+# Players who are not opped require permissions:
+# To use the plugin: minigame.all
+#
+
 #This controls whether or not you want the plugin to be enabled
 Enabled: true
 
@@ -10,13 +15,19 @@ Enabled: true
 #This controls how long the grace time will be set for.
 ManhuntGraceTimer: 60
 
+# This controls how far runners can be before the hunter is allowed to teleport closer to them
+ManhuntTeleportDistance: 400
+
+#This controls how far away the border should be from the stronghold
+ManhuntBorderDistance: 500
+
 #
 #
-# This section is for manswap
+# This section is for deathswap
 #
 #
 
-ManSwapTimer: 300
+DeathSwapTimer: 300
 
 #
 #
@@ -31,23 +42,17 @@ BlocksRolled:
     - GRASS_BLOCK
     - DIRT
     - SAND
-    - ACACIA_PLANKS
-    - ACACIA_LOG
     - BIRCH_LOG
     - BIRCH_PLANKS
     - SPRUCE_LOG
     - SPRUCE_PLANKS
     - OAK_LOG
     - OAK_PLANKS
-    - DARK_OAK_LOG
-    - DARK_OAK_PLANKS
     - SANDSTONE
     - SANDSTONE_STAIRS
     - SANDSTONE_WALL
-    - DARK_OAK_LEAVES
     - BIRCH_LEAVES
     - SPRUCE_LEAVES
-    - ACACIA_LEAVES
     - OAK_LEAVES
     - COBBLESTONE
     - STONE
@@ -64,24 +69,19 @@ BlocksRolled:
     - DEEPSLATE
     - HAY_BLOCK
     - TERRACOTTA
-    - RED_SANDSTONE
-    - RED_SAND
     - GRAVEL
     - SNOW_BLOCK
-    - PACKED_ICE
-    - COBWEB
     - YELLOW_WOOL
-    - JUNGLE_LOG
-    - JUNGLE_PLANKS
     - BEDROCK
     - PUMPKIN
     - COMPOSTER
-    - STRIPPED_ACACIA_LOG
     - STRIPPED_BIRCH_LOG
     - STRIPPED_SPRUCE_LOG
     - STRIPPED_OAK_LOG
-    - STRIPPED_DARK_OAK_LOG
-    - PACKED_ICE
+    - RED_WOOL
+    - BLUE_WOOL
+    - ORANGE_WOOL
+    - PURPLE_WOOL
   Medium:
     - MOSSY_COBBLESTONE
     - BOOKSHELF
@@ -161,7 +161,7 @@ BlocksRolled:
 
 
 #This controls the difficulty of the game block hunt. The number demonstrates how many times block hunt will roll until it switches to a higher difficulty
-BlockHuntDifficulty: 10
+BlockHuntDifficulty: 20
 
 #This controls how long the players will have to find their assigned block. The unit used is seconds
 BlockHuntTime: 300

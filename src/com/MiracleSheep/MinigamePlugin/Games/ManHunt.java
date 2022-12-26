@@ -11,12 +11,8 @@ package com.MiracleSheep.MinigamePlugin.Games;
 //importing librairies and otherwise
 import com.MiracleSheep.MinigamePlugin.Items.ItemManager;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
-import com.MiracleSheep.MinigamePlugin.Tasks.BlockHuntPlayer;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.BlockFace;
+import com.MiracleSheep.MinigamePlugin.ObjectTypes.ManHuntPlayer;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -28,15 +24,35 @@ import java.util.ArrayList;
 public class ManHunt extends GameManager {
 
 
-    //arraylist that holds players and their blocks
-    public static ArrayList<BlockHuntPlayer> playerlist = new ArrayList<BlockHuntPlayer>();
-
     //integers for the timer
-    int time;
-    public static int taskID;
 
-    //player that will be the runner
-    public static Player runner;
+    //boolean that hold whether or not the  hunter will keep their inventory
+    public static boolean hunterKeep = false;
+
+
+    public static boolean runnerKeep = false;
+
+
+    int time;
+    public static int taskID3;
+
+    //integer that holds the number of lives that all runners start with
+    public static int lives = 0;
+
+    //integer that holds the limit
+    public static int limit = 0;
+
+    //checks if the win has been activated.
+    public static boolean activatedwin = false;
+
+    //players that will be the runner
+    public static ArrayList<ManHuntPlayer> runners = new ArrayList<ManHuntPlayer>();
+
+    //players that will be the hunter
+    public static ArrayList<Player> hunters = new ArrayList<Player>();
+
+    //players that are dead
+    public static ArrayList<Player> deadfolk = new ArrayList<Player>();
 
     public ItemManager inv = new ItemManager(main);
 
@@ -48,12 +64,77 @@ public class ManHunt extends GameManager {
         super(main);
     }
 
+    @Override
+    public void removeplayer(Player player) {
+        players.remove(player);
+        for (int i = 0 ; i < runners.size(); i++)  {
+            if (runners.get(i).player == player) {
+                runners.remove(i);
+            }
+        }
+        for (int i = 0 ; i < hunters.size(); i++)  {
+            if (hunters.get(i) == player) {
+                hunters.remove(i);
+            }
+        }
+        for (int i = 0 ; i < deadfolk.size(); i++)  {
+            if (deadfolk.get(i) == player) {
+                deadfolk.remove(i);
+            }
+        }
+        isWon();
+    }
+
+    @Override
+    public void playerElim(Player player) {
+
+            for (int i = 0 ; i < runners.size(); i++)  {
+                if (runners.get(i).player == player) {
+                    runners.remove(i);
+                    deadfolk.add(player);
+                    player.setGameMode(GameMode.SPECTATOR);
+                }
+            }
+            isWon();
+    }
+
+    //checks if the game is won and acts if it is
+    public void isWon() {
+        //checking if the game is still manhunt
+        if (this.getGame() == 2 && activatedwin == false) {
+
+            if (runners.size() == 0) {
+                onWon(1);
+            } else if (hunters.size() == 0) {
+                onWon(2);
+            }
+
+        }
+
+    }
+
     //function that gets called when the state is inactive - works as a unique clanup functiuon
     @Override
     public void onInactive() {
         stopTimer();
         started = false;
         setGame(0);
+
+
+        Location spawn = Bukkit.getWorld("world").getSpawnLocation();
+
+        //This loop sets all players out of spectatormode and returns everyone to spawn
+        for (int i = 0 ; i < players.size() ; i++) {
+            players.get(i).setGameMode(GameMode.SURVIVAL);
+            players.get(i).setHealth(20);
+            players.get(i).setFoodLevel(20);
+            players.get(i).setSaturation(20);
+            players.get(i).teleport(spawn);
+
+        }
+
+
+        // This loop removes the compass from any player's inventory
         for (int i = 0 ; i < players.size() ; i++) {
             for (int j = 0; j < players.get(i).getInventory().getSize() ; j++) {
                 ItemStack item = players.get(i).getInventory().getItem(j);
@@ -68,6 +149,15 @@ public class ManHunt extends GameManager {
                 }
             }
         }
+        limit = 0;
+        lives = 0;
+        players.clear();
+        hunters.clear();
+        deadfolk.clear();
+        runners.clear();
+        activatedwin = false;
+        WorldBorder wb = Bukkit.getWorld("world").getWorldBorder();
+        wb.setSize(30000000);
     }
 
     //function that gets called when the state is waiting
@@ -75,25 +165,83 @@ public class ManHunt extends GameManager {
     public void onWaiting() {
         setGame(2);
         players.add(getStartPlayer());
-        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + getStartPlayer().getDisplayName() + " has started a game of " + getName() + "!");
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + getStartPlayer().getDisplayName() + "" + ChatColor.GOLD + " has started a game of " + getName() + "!");
         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Anyone who wants to play should enter the command /join!");
     }
 
     //function that gets called when the state is starting
     @Override
     public void onStarting() {
-        runner = players.get(generaterandom());
-        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + runner.getDisplayName() + " is the runner!");
-        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Prepare yourselves!");
+
+
+        //creating the world border if that limit had been set
+        if (limit == 1) {
+            Location l = Bukkit.getWorld("world").getSpawnLocation();
+            Location neareststronghold = Bukkit.getWorld("world").locateNearestStructure(l, StructureType.STRONGHOLD,72,true);
+            WorldBorder wb = Bukkit.getWorld("world").getWorldBorder();
+            wb.setCenter(l);
+
+            double neareststronghold_x = neareststronghold.getX();
+            double neareststronghold_z = neareststronghold.getZ();
+
+            if (neareststronghold_x >= neareststronghold_z) {
+                wb.setSize((neareststronghold_x*2) + main.getConfig().getInt("ManhuntBorderDistance"));
+            } else if (neareststronghold_x <= neareststronghold_z) {
+                wb.setSize((neareststronghold_z*2) + main.getConfig().getInt("ManhuntBorderDistance"));
+            }
+
+
+
+        }
+
+        // putting all players not in the hunters into the runners
         for (int i = 0 ; i < players.size() ; i++) {
-            players.get(i).setHealth(20);
-            players.get(i).setFoodLevel(20);
-            inv.createTracker();
-            if (players.get(i) != runner) {
-                players.get(i).getInventory().addItem(inv.tracker);
+
+            if (hunters.contains(players.get(i))) {
+
+            } else {
+                runners.add(new ManHuntPlayer(players.get(i),lives));
             }
 
         }
+
+        // broadcasting the runners
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Runners:");
+        for (int i = 0; i < runners.size(); i++ ) {
+            Bukkit.broadcastMessage(ChatColor.DARK_GREEN + "- " + runners.get(i).player.getDisplayName());
+        }
+
+        // broadcasting the hunters
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Hunters:");
+        for (int i = 0; i < hunters.size(); i++ ) {
+            Bukkit.broadcastMessage(ChatColor.DARK_RED + "- " + hunters.get(i).getDisplayName());
+        }
+
+        if (hunters.size() == 0) {
+            isWon();
+            return;
+        } else if (runners.size() == 0) {
+            isWon();
+            return;
+        }
+
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The grace period has started!");
+        for (int i = 0 ; i < players.size() ; i++) {
+            players.get(i).setHealth(20);
+            players.get(i).setFoodLevel(20);
+            for (int j = 0 ; j < hunters.size(); j++)  {
+                inv.createTracker(hunters.get(j));
+            }
+            if (hunters.contains(players.get(i))) {
+                Location loc = players.get(i).getLocation();
+                loc.setY(players.get(i).getWorld().getHighestBlockAt( players.get(i).getLocation().getBlockX(), players.get(i).getLocation().getBlockZ()).getY() + 1);
+                players.get(i).teleport(loc);
+//                players.get(i).getInventory().addItem(inv.tracker);
+            }
+
+        }
+
+
 
         setState(GameState.ACTIVE);
 
@@ -102,6 +250,7 @@ public class ManHunt extends GameManager {
     //function that gets called when the state is active
     @Override
     public void onActive() {
+
         run();
 
     }
@@ -113,9 +262,22 @@ public class ManHunt extends GameManager {
     }
 
     //function that gets called when the state is won
-    @Override
-    public void onWon() {
+    public void onWon(int whowon) {
+        activatedwin = true;
 
+        if (whowon == 0) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Ender Dragon has been defeated!");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Runners have won!");
+            setState(GameState.INACTIVE);
+        } else if (whowon == 1) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: All the runners have died or given up!");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Hunters have won!");
+            setState(GameState.INACTIVE);
+        } else if (whowon == 2) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: All the hunters have given up!");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Runners have won!");
+            setState(GameState.INACTIVE);
+        }
     }
 
 
@@ -137,7 +299,7 @@ public class ManHunt extends GameManager {
         int fulltime = time;
 
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        taskID = scheduler.scheduleSyncRepeatingTask(main, new Runnable() {
+        taskID3 = scheduler.scheduleSyncRepeatingTask(main, new Runnable() {
             @Override
             public void run() {
 
@@ -169,7 +331,7 @@ public class ManHunt extends GameManager {
 
     //method to stop the timer
     public void stopTimer() {
-        Bukkit.getScheduler().cancelTask(taskID);
+        Bukkit.getScheduler().cancelTask(taskID3);
     }
 
 
@@ -185,6 +347,9 @@ public class ManHunt extends GameManager {
         return (int)((Math.random() * range) + min);
 
     }
+
+
+
 
 
 

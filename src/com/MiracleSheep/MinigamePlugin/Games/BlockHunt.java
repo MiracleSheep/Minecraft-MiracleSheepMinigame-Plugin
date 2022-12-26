@@ -10,11 +10,12 @@ package com.MiracleSheep.MinigamePlugin.Games;
 
 //importing librairies and otherwise
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
-import com.MiracleSheep.MinigamePlugin.Tasks.BlockHuntPlayer;
+import com.MiracleSheep.MinigamePlugin.ObjectTypes.BlockHuntPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.ArrayList;
@@ -54,6 +55,18 @@ public class BlockHunt extends GameManager {
 
     }
 
+    //function that says what do to when a player needs to be removed from the game
+    @Override
+    public void removeplayer(Player player) {
+        players.remove(player);
+    }
+
+    //method for when a player gets eliminated
+    @Override
+    public void playerElim(Player player) {
+        players.remove(player);
+    }
+
     //function that gets called when the state is inactive - works as a unique clanup functiuon
     @Override
     public void onInactive() {
@@ -66,7 +79,7 @@ public class BlockHunt extends GameManager {
     public void onWaiting() {
                 setGame(1);
                 players.add(getStartPlayer());
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + getStartPlayer().getDisplayName() + " has started a game of " + getName() + "!");
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + getStartPlayer().getDisplayName() + "" + ChatColor.GOLD + " has started a game of " + getName() + "!");
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: To play, do /join!");
 
     }
@@ -78,8 +91,9 @@ public class BlockHunt extends GameManager {
 
          for (int i = 0 ; i < players.size() ; i++) {
              players.get(i).setHealth(20);
-             players.get(i).setFoodLevel(10);
+             players.get(i).setFoodLevel(20);
          }
+         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Block Hunt has begun!");
          setState(GameState.ACTIVE);
 
 
@@ -192,7 +206,7 @@ public class BlockHunt extends GameManager {
                     if (playerlist.get(i).player.isOnline() && players.contains(playerlist.get(i).player)) {
 
                         if (playerlist.get(i).player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.getMaterial(playerlist.get(i).block))) {
-                            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + playerlist.get(i).player.getDisplayName() + " has found their block!");
+                            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + playerlist.get(i).player.getDisplayName() + "" + ChatColor.GOLD + " has found their block!");
                             playerlist.remove(i);
                         } else {
                         }
@@ -233,7 +247,7 @@ public class BlockHunt extends GameManager {
                     Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "Time is up!");
 
                     for (int j = 0 ; j < playerlist.size() ; j++) {
-                        Bukkit.broadcastMessage(ChatColor.GOLD + "" + playerlist.get(j).player.getDisplayName() + " failed to find the block " + playerlist.get(j).block + " in time!");
+                        Bukkit.broadcastMessage(ChatColor.GOLD + "" + playerlist.get(j).player.getDisplayName() + "" + ChatColor.GOLD + " failed to find the block " + playerlist.get(j).block + " in time!");
                         playerElim(playerlist.get(j).player);
                     }
                         isWon();
@@ -261,7 +275,7 @@ public class BlockHunt extends GameManager {
         } else {
             for (int i = 0 ; i < players.size() ; i++) {
                 players.get(i).setHealth(20);
-                players.get(i).setFoodLevel(10);
+                players.get(i).setFoodLevel(20);
             }
         }
     }
@@ -279,7 +293,7 @@ public class BlockHunt extends GameManager {
 
         if (players.size() == 1) {
 
-            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + players.get(0).getDisplayName() + " Wins the game!");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + players.get(0).getDisplayName() + "" + ChatColor.GOLD + " Wins the game!");
             setState(GameState.INACTIVE);
 
         } else if (players.size() == 0) {
@@ -316,6 +330,8 @@ public class BlockHunt extends GameManager {
         difficulty = main.getConfig().getInt("BlockHuntDifficulty");
 
     }
+
+
 
 
 
