@@ -85,7 +85,7 @@ public class ItemManager {
         //setting the class variable testitem to the item in this function
         tracker = item;
 
-        if (manhunt.limit == 2) {
+        if (ManHunt.limit == 2) {
             if (closestLocation.distance(hunterLocation) > main.getConfig().getInt("ManhuntTeleportDistance")) {
 
                 if (hunter.getWorld().getEnvironment().equals(World.Environment.NETHER)) {

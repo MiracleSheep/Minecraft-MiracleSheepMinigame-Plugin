@@ -153,9 +153,9 @@ public class GameListener implements Listener {
                 }  else if (e.getCurrentItem().getType() == Material.RED_WOOL) {
                     //outputting the choice to the player
                     player.sendMessage(ChatColor.GREEN + "Canceled option selection!");
-                    manhunt.hunters.clear();
-                    manhunt.lives = 0;
-                    manhunt.limit = 0;
+                    ManHunt.hunters.clear();
+                    ManHunt.lives = 0;
+                    ManHunt.limit = 0;
                     player.closeInventory();
                 } else if (e.getCurrentItem().getType() == Material.GREEN_WOOL) {
                     //outputting the choice to the player
@@ -181,14 +181,14 @@ public class GameListener implements Listener {
                 //outputting the choice to the player
                 player.sendMessage(ChatColor.RED + "This is not an option");
             } else if (e.getCurrentItem().getType() == Material.GREEN_WOOL) {
-                manhunt.lives = 1;
+                ManHunt.lives = 1;
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Each runner will have 1 life.");
                 player.closeInventory();
                 HunterSaveInvSelection gui = new HunterSaveInvSelection(main);
                 player.openInventory(gui.getInventory());
 
             }  else if (e.getCurrentItem().getType() == Material.YELLOW_WOOL) {
-                manhunt.lives = 2;
+                ManHunt.lives = 2;
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Each runner will have 2 lives.");
                 player.closeInventory();
                 HunterSaveInvSelection gui = new HunterSaveInvSelection(main);
@@ -196,15 +196,15 @@ public class GameListener implements Listener {
             }  else if (e.getCurrentItem().getType() == Material.RED_WOOL) {
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Each runner will have 3 lives.");
                 player.closeInventory();
-                manhunt.lives = 3;
+                ManHunt.lives = 3;
                 HunterSaveInvSelection gui = new HunterSaveInvSelection(main);
                 player.openInventory(gui.getInventory());
             }   else if (e.getCurrentItem().getType() == Material.BARRIER) {
                 //outputting the choice to the player
                 player.sendMessage(ChatColor.GREEN + "Canceled option selection!");
-                manhunt.hunters.clear();
-                manhunt.lives = 0;
-                manhunt.limit = 0;
+                ManHunt.hunters.clear();
+                ManHunt.lives = 0;
+                ManHunt.limit = 0;
                 player.closeInventory();
             }
 
@@ -222,30 +222,33 @@ public class GameListener implements Listener {
                 //outputting the choice to the player
                 player.sendMessage(ChatColor.RED + "This is not an option");
             } else if (e.getCurrentItem().getType() == Material.IRON_BARS) {
-                manhunt.limit = 1;
+
+                ManHunt.limit = 1;
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: There will be a world border that encompasses the stronghold.");
                 player.closeInventory();
                 LifeSelection gui = new LifeSelection(main);
                 player.openInventory(gui.getInventory());
 
             }  else if (e.getCurrentItem().getType() == Material.ENDER_PEARL) {
-                manhunt.limit = 2;
+
+                ManHunt.limit = 2;
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Hunters will be teleported closer to Runners if they are too far upon right clicking their compass");
                 player.closeInventory();
                 LifeSelection gui = new LifeSelection(main);
+
                 player.openInventory(gui.getInventory());
             }  else if (e.getCurrentItem().getType() == Material.ELYTRA) {
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: There will be no limits. Runners may go as far as they please.");
                 player.closeInventory();
-                manhunt.limit = 0;
+                ManHunt.limit = 0;
                 LifeSelection gui = new LifeSelection(main);
                 player.openInventory(gui.getInventory());
             }   else if (e.getCurrentItem().getType() == Material.BARRIER) {
                 //outputting the choice to the player
                 player.sendMessage(ChatColor.GREEN + "Canceled option selection!");
-                manhunt.hunters.clear();
-                manhunt.lives = 0;
-                manhunt.limit = 0;
+                ManHunt.hunters.clear();
+                ManHunt.lives = 0;
+                ManHunt.limit = 0;
                 player.closeInventory();
             }
 
@@ -263,7 +266,6 @@ public class GameListener implements Listener {
                 //outputting the choice to the player
                 player.sendMessage(ChatColor.RED + "This is not an option");
             } else if (e.getCurrentItem().getType() == Material.RED_STAINED_GLASS) {
-                manhunt.limit = 1;
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Runners will lose their inventory on death.");
                 manhunt.runnerKeep = false;
                 player.closeInventory();
@@ -271,7 +273,6 @@ public class GameListener implements Listener {
                 player.openInventory(gui.getInventory());
 
             }  else if (e.getCurrentItem().getType() == Material.GREEN_STAINED_GLASS) {
-                manhunt.limit = 2;
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Runners will keep their inventory on death.");
                 manhunt.runnerKeep = true;
                 player.closeInventory();
@@ -300,7 +301,6 @@ public class GameListener implements Listener {
                 //outputting the choice to the player
                 player.sendMessage(ChatColor.RED + "This is not an option");
             } else if (e.getCurrentItem().getType() == Material.RED_STAINED_GLASS) {
-                manhunt.limit = 1;
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Hunters will lose their inventory on death.");
                 manhunt.hunterKeep = false;
                 player.closeInventory();
@@ -308,7 +308,6 @@ public class GameListener implements Listener {
                 player.openInventory(gui.getInventory());
 
             }  else if (e.getCurrentItem().getType() == Material.GREEN_STAINED_GLASS) {
-                manhunt.limit = 2;
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Hunters will keep their inventory on death.");
                 manhunt.hunterKeep = true;
                 player.closeInventory();

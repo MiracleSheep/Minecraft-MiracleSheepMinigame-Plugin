@@ -42,6 +42,9 @@ public class ManHunt extends GameManager {
     //integer that holds the limit
     public static int limit = 0;
 
+    //checks if the win has been activated.
+    public static boolean activatedwin = false;
+
     //players that will be the runner
     public static ArrayList<ManHuntPlayer> runners = new ArrayList<ManHuntPlayer>();
 
@@ -98,12 +101,11 @@ public class ManHunt extends GameManager {
     //checks if the game is won and acts if it is
     public void isWon() {
         //checking if the game is still manhunt
-        if (this.getGame() == 2) {
+        if (this.getGame() == 2 && activatedwin == false) {
 
             if (runners.size() == 0) {
                 onWon(1);
-            }
-            if (hunters.size() == 0) {
+            } else if (hunters.size() == 0) {
                 onWon(2);
             }
 
@@ -153,6 +155,7 @@ public class ManHunt extends GameManager {
         hunters.clear();
         deadfolk.clear();
         runners.clear();
+        activatedwin = false;
         WorldBorder wb = Bukkit.getWorld("world").getWorldBorder();
         wb.setSize(30000000);
     }
@@ -172,7 +175,6 @@ public class ManHunt extends GameManager {
 
 
         //creating the world border if that limit had been set
-        Bukkit.broadcastMessage(ChatColor.GOLD + "limit:" + limit);
         if (limit == 1) {
             Location l = Bukkit.getWorld("world").getSpawnLocation();
             Location neareststronghold = Bukkit.getWorld("world").locateNearestStructure(l, StructureType.STRONGHOLD,72,true);
@@ -215,6 +217,13 @@ public class ManHunt extends GameManager {
             Bukkit.broadcastMessage(ChatColor.DARK_RED + "- " + hunters.get(i).getDisplayName());
         }
 
+        if (hunters.size() == 0) {
+            isWon();
+            return;
+        } else if (runners.size() == 0) {
+            isWon();
+            return;
+        }
 
         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The grace period has started!");
         for (int i = 0 ; i < players.size() ; i++) {
@@ -232,6 +241,8 @@ public class ManHunt extends GameManager {
 
         }
 
+
+
         setState(GameState.ACTIVE);
 
     }
@@ -239,6 +250,7 @@ public class ManHunt extends GameManager {
     //function that gets called when the state is active
     @Override
     public void onActive() {
+
         run();
 
     }
@@ -251,6 +263,8 @@ public class ManHunt extends GameManager {
 
     //function that gets called when the state is won
     public void onWon(int whowon) {
+        activatedwin = true;
+
         if (whowon == 0) {
             Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Ender Dragon has been defeated!");
             Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The Runners have won!");
