@@ -160,8 +160,6 @@ BlocksRolled:
 
 
 
-#This controls the difficulty of the game block hunt. The number demonstrates how many times block hunt will roll until it switches to a higher difficulty
-BlockHuntDifficulty: 20
 
 #This controls how long the players will have to find their assigned block. The unit used is seconds
 BlockHuntTime: 300
@@ -170,5 +168,8 @@ BlockHuntTime: 300
 # or if it will keep going until the end of the timer
 #True means players can end the timer prematurely
 PlayersCanFinishTimer: true
+
+#This controls the distance that players will be distributed by when the host of the games selects the distribute option for manhunt or block hunt.
+SpreadDistance: 1000
 
 

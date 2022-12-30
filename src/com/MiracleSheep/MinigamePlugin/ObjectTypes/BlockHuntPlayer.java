@@ -14,9 +14,14 @@ public class BlockHuntPlayer {
 
     public String block;
 
-    public BlockHuntPlayer(Player player, String block) {
+    public int lives;
+
+    public boolean found = false;
+
+    public BlockHuntPlayer(Player player, String block, int lives) {
         this.player = player;
         this.block = block;
+        this.lives = lives;
     }
 
 }

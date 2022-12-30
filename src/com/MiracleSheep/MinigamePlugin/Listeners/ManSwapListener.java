@@ -32,26 +32,7 @@ public class ManSwapListener implements Listener {
         this.main = main;
     }
 
-    @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent e){
-        DeathSwap manswap = new DeathSwap(main);
-        Player player = (Player) e.getEntity();
-        if (manswap.getGameState() == GameState.ACTIVE && manswap.getGame() == 3) {
-            if (manswap.players.contains(player)) {
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + "" + ChatColor.GOLD + " has been eliminated!");
-                manswap.playerElim(player);
-                manswap.isWon();
 
-            }
-
-
-
-        }
-
-
-
-
-    }
 
 
     //THis event detects when a player is hit

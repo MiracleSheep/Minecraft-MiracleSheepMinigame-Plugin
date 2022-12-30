@@ -10,6 +10,8 @@ package com.MiracleSheep.MinigamePlugin.Games;
 
 //importing librairies and otherwise
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
+import com.MiracleSheep.MinigamePlugin.ObjectTypes.BlockHuntPlayer;
+import com.MiracleSheep.MinigamePlugin.ObjectTypes.DeathSwapPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -30,6 +32,26 @@ public class DeathSwap extends GameManager {
     public static int time;
     public static int taskID2;
 
+    // This variable will be used to set the fulltime
+    public static int fulltime = 0;
+
+    public static ArrayList<DeathSwapPlayer> playerlist = new ArrayList<DeathSwapPlayer>();
+
+    //This variable will be used to ccheck the round number
+    public static int round_num = 0;
+
+    //This variable will be used to check if speed mode has been enabled.
+    public static boolean speed = false;
+
+    // this variable will be used to check whether all the players in the game should be teleported
+    public static boolean teleport = false;
+
+    public static boolean keepinventory = false;
+
+    public static int lives = 0;
+
+
+
     //passing the instance of the main class
     public DeathSwap(MinigamePlugin main) {
         super(main);
@@ -38,7 +60,26 @@ public class DeathSwap extends GameManager {
     //function that gets called when the state is inactive - works as a unique clanup functiuon
     @Override
     public void onInactive() {
+
+
         stopTimer(false);
+        // This variable will be used to set the fulltime
+         fulltime = 0;
+
+        //This variable will be used to ccheck the round number
+        round_num = 0;
+
+        //This variable will be used to check if speed mode has been enabled.
+        speed = false;
+
+        // this variable will be used to check whether all the players in the game should be teleported
+        teleport = false;
+
+        //this variable determines whether the players will keep their inventory on death
+        keepinventory = false;
+
+        //this variable contains the lives of each player
+        lives = 0;
     }
 
     //function that gets called when the state is waiting
@@ -60,6 +101,16 @@ public class DeathSwap extends GameManager {
             players.get(i).setHealth(20);
             players.get(i).setFoodLevel(20);
         }
+
+        playerlist = new ArrayList<DeathSwapPlayer>();
+        for (int i = 0 ; i < players.size() ; i++) {
+            playerlist.add(new DeathSwapPlayer(players.get(i),lives));
+        }
+
+
+        if (teleport == true) {
+            distribute();
+        }
         setState(GameState.ACTIVE);
 
     }
@@ -71,9 +122,19 @@ public class DeathSwap extends GameManager {
     }
 
     //method for when a player gets eliminated
-    @Override
-    public void playerElim(Player player) {
-        players.remove(player);
+    public void playerElim(DeathSwapPlayer player) {
+
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]:" + player.player.getDisplayName() + "" + ChatColor.GOLD + " lost a life!");
+        player.lives -= 1;
+
+        if (player.lives <= 0) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: They have no lives left and are eliminated!");
+            playerlist.remove(player);
+            players.remove(player.player);
+        } else {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: They have " + player.lives + " lives left!");
+        }
+
     }
 
     //function that gets called when the state is active
@@ -82,6 +143,8 @@ public class DeathSwap extends GameManager {
         run();
 
     }
+
+
 
     //function that gets called when the state is transition
     @Override
@@ -101,12 +164,12 @@ public class DeathSwap extends GameManager {
     public void isWon() {
 
 
-        if (players.size() == 1) {
+        if (players.size() == 1 || playerlist.size() == 1) {
 
             Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + players.get(0).getDisplayName() + "" + ChatColor.GOLD + " Wins the game!");
             setState(GameState.INACTIVE);
 
-        } else if (players.size() == 0) {
+        } else if (players.size() == 0 || playerlist.size() == 0) {
             Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Everybody was eliminated this round!");
             Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Nobody wins!");
             setState(GameState.INACTIVE);
@@ -123,6 +186,7 @@ public class DeathSwap extends GameManager {
     public void run() {
 
         setTimer(main.getConfig().getInt("DeathSwapTimer"));
+
         startTimer();
 
 
@@ -133,6 +197,7 @@ public class DeathSwap extends GameManager {
     public void startTimer() {
 
 
+
         int fulltime = time;
 
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
@@ -140,10 +205,10 @@ public class DeathSwap extends GameManager {
             @Override
             public void run() {
 
-
-                if (time == 30) {
-                    Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "30 seconds before swap!");
+                if (time == fulltime || time  == 30) {
+                    Bukkit.broadcastMessage(ChatColor.DARK_PURPLE + "There will be " + time + " seconds before the swap!");
                 }
+
 
                 if (time < 11) {
                     if (time == 10) {
@@ -174,8 +239,48 @@ public class DeathSwap extends GameManager {
     }
 
     public void setTimer(int amount) {
-        time = amount;
+
+        if (round_num == 0) {
+            time = amount*2;
+        } else {
+
+            if (speed == true) {
+
+                if (amount - 30*round_num <= 0) {
+                    time = 30;
+                } else {
+                    time = amount - 30*round_num;
+                }
+            } else {
+                time = amount;
+            }
+
+        }
+
     }
+
+
+    //This function is used to distribute all players across the world by a set distance
+    public void distribute() {
+        if (players.size() < 2) {
+            // can't spread with zero or one players
+            return;
+        }
+
+        //shuffle players
+        Collections.shuffle(players);
+
+        //getting the spawn point
+        Location spawn = Bukkit.getWorld("world").getSpawnLocation();
+
+        for (int i = 0; i < players.size(); i++) {
+            spawn.add(1000,0,1000);
+            spawn.setY(players.get(i).getWorld().getHighestBlockAt( players.get(i).getLocation().getBlockX(), players.get(i).getLocation().getBlockZ()).getY() + 1);
+            players.get(i).teleport(spawn);
+        }
+
+    }
+
 
     //This function swaps all the players
     public void swap() {
@@ -225,6 +330,8 @@ public class DeathSwap extends GameManager {
         if (restart) {
             setState(GameState.TRANSITION);
         } else {
+            round_num += 1;
+
             for (int i = 0 ; i < players.size() ; i++) {
                 players.get(i).setHealth(20);
                 players.get(i).setFoodLevel(20);

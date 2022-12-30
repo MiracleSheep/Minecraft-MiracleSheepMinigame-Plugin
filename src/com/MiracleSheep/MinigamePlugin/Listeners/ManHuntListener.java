@@ -141,89 +141,9 @@ public class ManHuntListener implements Listener {
         }
     }
 
-    //on player respawn event
-    @EventHandler
-    public void onPlayerRespawn(PlayerRespawnEvent e) {
-        ManHunt manhunt = new ManHunt(main);
-        if (!(e.getPlayer() instanceof Player)) {return;}
-        Player player = (Player) e.getPlayer();
-
-        if (manhunt.getGameState() == GameState.ACTIVE && manhunt.getGame() == 2) {
-
-            if (manhunt.players.contains(player)) {
-
-                if (manhunt.hunters.contains(player) && manhunt.hunterKeep == true) {
-                    restoreInventory(player);
-                } else if (!(manhunt.hunters.contains(player)) && !(manhunt.deadfolk.contains(player)) && manhunt.runnerKeep == true) {
-                    restoreInventory(player);
-                }
-            }
-        }
-
-    }
-
-
-    //on player death event
-    @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent e){
-        ManHunt manhunt = new ManHunt(main);
-        if (!(e.getEntity() instanceof Player)) {return;}
-        Player player = (Player) e.getEntity();
-
-        if (manhunt.getGameState() == GameState.ACTIVE && manhunt.getGame() == 2) {
-
-            if (manhunt.players.contains(player)) {
-
-                if (manhunt.hunters.contains(player) && manhunt.hunterKeep == true) {
-                    saveInventory(player);
-                } else if (!(manhunt.hunters.contains(player)) && !(manhunt.deadfolk.contains(player)) && manhunt.runnerKeep == true) {
-                    saveInventory(player);
-                }
-
-            if (!(manhunt.hunters.contains(player)) && !(manhunt.deadfolk.contains(player))) {
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The runner " + player.getDisplayName() + "" + ChatColor.GOLD + " has been killed!");
-
-                ManHuntPlayer runner;
-                //getting the runner and finding the nuber of lives they have
-                for (int i = 0 ; i < manhunt.runners.size(); i++)  {
-                    if (manhunt.runners.get(i).player == player) {
-                         manhunt.runners.get(i).lives -= 1;
-                        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: They have " + manhunt.runners.get(i).lives + "" + ChatColor.GOLD + " lives remaining.");
-
-                         if (manhunt.runners.get(i).lives <= 0) {
-                             Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + " has been eliminated from ManHunt!");
-                             manhunt.playerElim(player);
-                         }
-
-                    }
-                }
 
 
 
-            } else if (!(manhunt.deadfolk.contains(player))) {
-                for (int j = 0; j < player.getInventory().getSize() ; j++) {
-                    ItemStack item = player.getInventory().getItem(j);
-                    if (item != null) {
-
-
-                        if (item.getItemMeta().hasCustomModelData()) {
-                            if (item.getItemMeta().getCustomModelData() == main.i.tracker.getItemMeta().getCustomModelData()) {
-                                e.getDrops().remove(item);
-                            }
-                        }
-                    }
-                }
-            }
-            }
-
-
-
-        }
-
-
-
-
-    }
 
 
     //on player throw item event

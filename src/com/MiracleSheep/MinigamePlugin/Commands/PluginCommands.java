@@ -11,10 +11,7 @@ package com.MiracleSheep.MinigamePlugin.Commands;
 
 //importing libraries and other packages
 import com.MiracleSheep.MinigamePlugin.Games.*;
-import com.MiracleSheep.MinigamePlugin.Inventory.HunterSelection;
-import com.MiracleSheep.MinigamePlugin.Inventory.LifeSelection;
-import com.MiracleSheep.MinigamePlugin.Inventory.LimitSelection;
-import com.MiracleSheep.MinigamePlugin.Inventory.MainMenu;
+import com.MiracleSheep.MinigamePlugin.Inventory.*;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -200,7 +197,10 @@ public class PluginCommands implements CommandExecutor {
                         if (manager.getGame() != 0 && manager.getGameState() == GameState.WAITING) {
                             player.sendMessage(ChatColor.GREEN + "Starting " + manager.getName() + "...");
                             if (manager.getGame() == 1) {
-                                blockhunt.setState(GameState.STARTING);
+                                BlockHuntDifficultySelection gui = new BlockHuntDifficultySelection(main);
+                                player.openInventory(gui.getInventory());
+
+
                             } else if (manager.getGame() == 2) {
                                 manhunt.hunters.clear();
                                 manhunt.hunterKeep = false;
