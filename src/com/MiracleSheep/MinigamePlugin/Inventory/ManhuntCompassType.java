@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class BlockHuntDifficultySelection implements InventoryHolder {
+public class ManhuntCompassType implements InventoryHolder {
 
     //Creating an inventory object
     public Inventory inv;
@@ -32,10 +32,11 @@ public class BlockHuntDifficultySelection implements InventoryHolder {
     int inventorysize = 45;
 
     //This is the constructor
-    public BlockHuntDifficultySelection(MinigamePlugin main) {
+    public ManhuntCompassType
+    (MinigamePlugin main) {
 
         //initializing the inventory
-        inv = Bukkit.createInventory(this, inventorysize, "Difficulty");//max size 54
+        inv = Bukkit.createInventory(this, inventorysize, "Compass Tracking Type");//max size 54
         this.main = main;
         init(this.main);
 
@@ -51,18 +52,13 @@ public class BlockHuntDifficultySelection implements InventoryHolder {
         ItemStack rim = createItem("None", Material.YELLOW_STAINED_GLASS_PANE, Collections.singletonList("Please select an option"));
 
         //This is an the confirming icon
-        ItemStack cancel = createItem("Cancel Selection", Material.BARRIER, Collections.singletonList("Select this to cancel the life selection."));
+        ItemStack cancel = createItem("Cancel Selection", Material.BARRIER, Collections.singletonList("Select this to cancel the limit selection."));
 
-        //This item sets the number of lives to 1
-        ItemStack one_life = createItem("Easy", Material.GREEN_WOOL, Collections.singletonList("There will be twenty blocks between each difficulty change."));
+        //This item sets no keep inventory
+        ItemStack lose = createItem("Choose Tracking", Material.MAP, Collections.singletonList("The compass can change the runner it targets."));
 
-        //This item sets the number of lives to 2
-        ItemStack two_lives = createItem("Medium", Material.YELLOW_WOOL, Collections.singletonList("There will be fifteen blocks between each difficulty change."));
-
-        //This item sets the number of lives to 3
-        ItemStack three_lives = createItem("Hard", Material.RED_WOOL, Collections.singletonList("There will be ten blocks between each difficulty change."));
-
-
+        //This item sets keep inventory
+        ItemStack keep = createItem("Closest Runner", Material.COMPASS, Collections.singletonList("The compass targets the closest runner."));
 
         //Creating inventory rows
         int rowNum = inventorysize / 9;
@@ -81,7 +77,6 @@ public class BlockHuntDifficultySelection implements InventoryHolder {
             }
         }
         int playernum = 0;
-
 
         //Fills the inventory
         //This loop iterates through the rows of the chest
@@ -102,19 +97,12 @@ public class BlockHuntDifficultySelection implements InventoryHolder {
                 if (i == 0 || i == 8) {
                     inv.setItem(i + (f * 9), rim);
                 }
-
-
-
-
-
-
             }
         }
 
         //placing the lives
-        inv.setItem(3 + (9*2), one_life);
-        inv.setItem(4 + (9*2), two_lives);
-        inv.setItem(5 + (9*2), three_lives);
+        inv.setItem(3 + (9*2), keep);
+        inv.setItem(5 + (9*2), lose);
 
         inv.setItem(inventorysize - 1, cancel);
     }

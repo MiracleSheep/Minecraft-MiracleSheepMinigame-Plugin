@@ -16,14 +16,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 
-public class DeathSwapSpeedMode implements InventoryHolder {
+public class DeathSwapBanDimensions implements InventoryHolder {
 
     //Creating an inventory object
     public Inventory inv;
@@ -32,11 +31,11 @@ public class DeathSwapSpeedMode implements InventoryHolder {
     int inventorysize = 45;
 
     //This is the constructor
-    public DeathSwapSpeedMode
+    public DeathSwapBanDimensions
     (MinigamePlugin main) {
 
         //initializing the inventory
-        inv = Bukkit.createInventory(this, inventorysize, "Death Swap Mode Selection");//max size 54
+        inv = Bukkit.createInventory(this, inventorysize, "Death Swap Dimension Selection");//max size 54
         this.main = main;
         init(this.main);
 
@@ -55,10 +54,10 @@ public class DeathSwapSpeedMode implements InventoryHolder {
         ItemStack cancel = createItem("Cancel Selection", Material.BARRIER, Collections.singletonList("Select this to cancel the selection."));
 
         //This item sets no keep inventory
-        ItemStack lose = createItem("Speed Mode", Material.RABBIT_FOOT, Collections.singletonList("Speed mode makes the grace period gradually decrease until it hits 30 seconds."));
+        ItemStack lose = createItem("Enable Dimensions", Material.NETHERRACK, Collections.singletonList("Players are allowed to enter dimensions"));
 
         //This item sets keep inventory
-        ItemStack keep = createItem("Classic", Material.GRASS_BLOCK, Collections.singletonList("This is the classic death swap experience."));
+        ItemStack keep = createItem("Disable Dimensions", Material.BEDROCK, Collections.singletonList("Players are not allowed to enter dimensions"));
 
         //Creating inventory rows
         int rowNum = inventorysize / 9;

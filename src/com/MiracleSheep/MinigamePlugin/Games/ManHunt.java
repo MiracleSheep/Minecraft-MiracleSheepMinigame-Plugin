@@ -13,8 +13,9 @@ import com.MiracleSheep.MinigamePlugin.Items.ItemManager;
 import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
 import com.MiracleSheep.MinigamePlugin.ObjectTypes.ManHuntPlayer;
 import org.bukkit.*;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.ArrayList;
@@ -42,8 +43,17 @@ public class ManHunt extends GameManager {
     //integer that holds the limit
     public static int limit = 0;
 
+    //boolean that holds the trac cking type of the compass
+    public static boolean trackindividuals = false;
+
     //checks if the win has been activated.
     public static boolean activatedwin = false;
+
+
+    public static ArrayList<ArmorStand> disconnected_players = new ArrayList<ArmorStand>();
+
+    public static Location spawn = Bukkit.getWorld("world").getSpawnLocation();
+
 
     //players that will be the runner
     public static ArrayList<ManHuntPlayer> runners = new ArrayList<ManHuntPlayer>();
@@ -66,6 +76,7 @@ public class ManHunt extends GameManager {
 
     @Override
     public void removeplayer(Player player) {
+
         players.remove(player);
         for (int i = 0 ; i < runners.size(); i++)  {
             if (runners.get(i).player == player) {
@@ -82,11 +93,25 @@ public class ManHunt extends GameManager {
                 deadfolk.remove(i);
             }
         }
-        isWon();
+
+        if (player == startPlayer && isWon() == false) {
+            players.get(0).sendMessage(ChatColor.AQUA + "You are the new game host!");
+            setStartPlayer(players.get(0));
+
+        }
     }
 
     @Override
     public void playerElim(Player player) {
+
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The runner " + player.getDisplayName() + "" + ChatColor.GOLD + " has has lost a life!");
+
+        runners.get(getRunner(player)).lives -= 1;
+
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: They have " + runners.get(getRunner(player)).lives + "" + ChatColor.GOLD + " lives remaining.");
+
+        if (runners.get(getRunner(player)).lives <= 0) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + " has been eliminated from ManHunt!");
 
             for (int i = 0 ; i < runners.size(); i++)  {
                 if (runners.get(i).player == player) {
@@ -96,32 +121,49 @@ public class ManHunt extends GameManager {
                 }
             }
             isWon();
+
+        }
+
+
+
+
+
     }
 
     //checks if the game is won and acts if it is
-    public void isWon() {
+    public boolean isWon() {
         //checking if the game is still manhunt
         if (this.getGame() == 2 && activatedwin == false) {
 
             if (runners.size() == 0) {
                 onWon(1);
+                return true;
             } else if (hunters.size() == 0) {
                 onWon(2);
+                return true;
             }
 
         }
+        return false;
 
     }
 
     //function that gets called when the state is inactive - works as a unique clanup functiuon
     @Override
     public void onInactive() {
+
+        for (int o = 0 ; o  < players.size() ; o++) {
+            if (!(players.get(o).isOnline())) {
+                players.remove(players.get(0));
+            } else {
+                players.get(o).teleport(spawn);
+            }
+        }
+
         stopTimer();
         started = false;
         setGame(0);
 
-
-        Location spawn = Bukkit.getWorld("world").getSpawnLocation();
 
         //This loop sets all players out of spectatormode and returns everyone to spawn
         for (int i = 0 ; i < players.size() ; i++) {
@@ -129,8 +171,6 @@ public class ManHunt extends GameManager {
             players.get(i).setHealth(20);
             players.get(i).setFoodLevel(20);
             players.get(i).setSaturation(20);
-            players.get(i).teleport(spawn);
-
         }
 
 
@@ -142,7 +182,9 @@ public class ManHunt extends GameManager {
 
 
                 if (item.getItemMeta().hasCustomModelData()) {
-                if (item.getItemMeta().getCustomModelData() == main.i.tracker.getItemMeta().getCustomModelData()) {
+
+                if (item.getItemMeta().getCustomModelData() == 123) {
+
                     players.get(i).getInventory().remove(item);
                 }
                 }
@@ -151,13 +193,22 @@ public class ManHunt extends GameManager {
         }
         limit = 0;
         lives = 0;
+        trackindividuals = false;
         players.clear();
         hunters.clear();
         deadfolk.clear();
         runners.clear();
         activatedwin = false;
+
+        for (int j = 0 ; j < disconnected_players.size() ; j++) {
+            disconnected_players.get(j).remove();
+        }
+
+        disconnected_players.clear();
+
+        trackindividuals = false;
         WorldBorder wb = Bukkit.getWorld("world").getWorldBorder();
-        wb.setSize(30000000);
+        wb.reset();
     }
 
     //function that gets called when the state is waiting
@@ -172,23 +223,25 @@ public class ManHunt extends GameManager {
     //function that gets called when the state is starting
     @Override
     public void onStarting() {
-
-
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Starting...");
         //creating the world border if that limit had been set
         if (limit == 1) {
-            Location l = Bukkit.getWorld("world").getSpawnLocation();
-            Location neareststronghold = Bukkit.getWorld("world").locateNearestStructure(l, StructureType.STRONGHOLD,72,true);
             WorldBorder wb = Bukkit.getWorld("world").getWorldBorder();
-            wb.setCenter(l);
-
+            Location neareststronghold = Bukkit.getWorld("world").locateNearestStructure(spawn, StructureType.STRONGHOLD,100,false);
+            Bukkit.broadcastMessage(ChatColor.GREEN + "Activating Border!");
+            wb.setCenter(spawn);
             double neareststronghold_x = neareststronghold.getX();
             double neareststronghold_z = neareststronghold.getZ();
 
-            if (neareststronghold_x >= neareststronghold_z) {
-                wb.setSize((neareststronghold_x*2) + main.getConfig().getInt("ManhuntBorderDistance"));
-            } else if (neareststronghold_x <= neareststronghold_z) {
-                wb.setSize((neareststronghold_z*2) + main.getConfig().getInt("ManhuntBorderDistance"));
+
+            if ( Math.abs(neareststronghold_x)  >= Math.abs(neareststronghold_z)) {
+                Bukkit.broadcastMessage(ChatColor.GREEN + "The border will have a radius of " + (int) (Math.abs(neareststronghold_x) + main.getConfig().getInt("ManhuntBorderDistance")) + " blocks.");
+                wb.setSize((Math.abs(neareststronghold_x) + main.getConfig().getInt("ManhuntBorderDistance"))*2);
+            } else if (Math.abs(neareststronghold_x)  <= Math.abs(neareststronghold_z)) {
+                Bukkit.broadcastMessage(ChatColor.GREEN + "The border will have a radius of " + (int) (Math.abs(neareststronghold_z) + main.getConfig().getInt("ManhuntBorderDistance")) + " blocks.");
+                wb.setSize((Math.abs(neareststronghold_z) + main.getConfig().getInt("ManhuntBorderDistance"))*2);
             }
+
 
 
 
@@ -328,11 +381,103 @@ public class ManHunt extends GameManager {
 
     }
 
+    //method to determine if someone is a runner
+    public boolean isRunner(Player player) {
+        for (int i = 0 ; i < runners.size() ; i ++) {
+            if (runners.get(i).player == player) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getRunner(Player player) {
+        for (int i = 0 ; i < runners.size() ; i ++) {
+            if (runners.get(i).player == player) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    public int getRunnerWithName(String player) {
+        for (int i = 0 ; i < runners.size() ; i ++) {
+            if (runners.get(i).player.getDisplayName().equals(player)) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    public int runnerLives(Player player) {
+        for (int i = 0 ; i < runners.size() ; i ++) {
+            if (runners.get(i).player == player) {
+                return runners.get(i).lives;
+            }
+        }
+        return 0;
+    }
+
 
     //method to stop the timer
     public void stopTimer() {
         Bukkit.getScheduler().cancelTask(taskID3);
     }
+
+    //create dummy
+    public void dummy(Player player) {
+
+
+
+
+        ArmorStand armorStand = (ArmorStand) player.getWorld().spawnEntity(player.getLocation(),EntityType.ARMOR_STAND);
+        disconnected_players.add(armorStand);
+        armorStand.setArms(true);
+        armorStand.setHelmet(getHead(player));
+        armorStand.setVisible(true);
+        armorStand.setCustomName(player.getDisplayName());
+
+            if (player.getInventory().getBoots() == null) {
+                armorStand.setBoots(new ItemStack(Material.LEATHER_BOOTS));
+            } else {
+                armorStand.setBoots(new ItemStack(player.getInventory().getBoots()));
+            }
+
+            if (player.getInventory().getLeggings() == null) {
+                armorStand.setLeggings(new ItemStack(Material.LEATHER_LEGGINGS));
+            } else {
+                armorStand.setLeggings(new ItemStack(player.getInventory().getLeggings()));
+            }
+
+            if (player.getInventory().getChestplate() == null) {
+                armorStand.setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
+            } else {
+                armorStand.setChestplate(new ItemStack(player.getInventory().getChestplate()));
+            }
+
+
+        armorStand.setCustomNameVisible(true);
+        armorStand.setHealth(50);
+
+
+
+    }
+
+
+
+    public void removedummy (Player player) {
+
+        for (int i = 0 ; i < disconnected_players.size() ; i++) {
+            if (disconnected_players.get(i).getCustomName().equals(player.getDisplayName())) {
+                disconnected_players.get(i).remove();
+                disconnected_players.remove(i);
+                i = disconnected_players.size();
+            }
+        }
+
+
+    }
+
 
 
     //method that gets random number between one and an array length
@@ -346,6 +491,15 @@ public class ManHunt extends GameManager {
         int range = (max - min) + 1;
         return (int)((Math.random() * range) + min);
 
+    }
+
+    private static ItemStack getHead(Player player) {
+        ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1, (short) 3);
+        SkullMeta meta = (SkullMeta) item.getItemMeta();
+        meta.setOwner(player.getDisplayName());
+        meta.setDisplayName(player.getDisplayName());
+        item.setItemMeta(meta);
+        return (item);
     }
 
 

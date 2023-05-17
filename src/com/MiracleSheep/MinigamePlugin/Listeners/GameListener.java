@@ -17,16 +17,22 @@ import com.MiracleSheep.MinigamePlugin.MinigamePlugin;
 import com.MiracleSheep.MinigamePlugin.ObjectTypes.ManHuntPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
@@ -57,6 +63,7 @@ public class GameListener implements Listener {
         DeathSwap manswap = new DeathSwap(main);
         GameManager manager = new GameManager(main);
 
+
         //getting the player who disconnected
         Player player = (Player) e.getPlayer();
 
@@ -66,10 +73,135 @@ public class GameListener implements Listener {
                 blockhunt.playerDisc(player);
             } else if (manager.getGame() == 2) {
                 manhunt.playerDisc(player);
+                if (manhunt.isRunner(player)) {
+                    manhunt.runners.get(manhunt.getRunner(player)).disconnect_location = player.getLocation();
+                    manhunt.dummy(player);
+                }
+
             } else if (manager.getGame() == 3) {
                 manswap.playerDisc(player);
             }
         }
+
+    }
+
+    @EventHandler
+    public void onPlayerRejoin(PlayerJoinEvent e) {
+
+        BlockHunt blockhunt = new BlockHunt(main);
+        DeathSwap deathswap = new DeathSwap(main);
+        ManHunt manhunt = new ManHunt(main);
+        GameManager manager = new GameManager(main);
+
+        //getting the player who disconnected
+        Player player = e.getPlayer();
+
+        //checking if the player is in the lobby
+            if (manager.getGame() == 2) {
+
+
+                for (int i = 0 ; i < manhunt.runners.size() ; i ++ ) {
+                    if (manhunt.runners.get(i).player.getDisplayName().equals(player.getDisplayName())) {
+                        manhunt.players.remove(manhunt.runners.get(i).player);
+                        manhunt.runners.get(i).player = player;
+                        manhunt.players.add(player);
+                        if (manhunt.runnerKeep == false && manhunt.runners.get(i).lost_a_life == true) {
+                            player.getInventory().clear();
+                        }
+                        //manhunt.runners.get(i).disconnect_location.setY(player.getWorld().getHighestBlockAt(manhunt.runners.get(i).disconnect_location.getBlockX(),manhunt.runners.get(i).disconnect_location.getBlockZ()).getY() + 1);
+                        player.teleport(manhunt.runners.get(i).disconnect_location);
+                        manhunt.removedummy(player);
+
+                    }
+                }
+
+                for (int i = 0 ; i < manhunt.deadfolk.size() ; i ++ ) {
+                    if (manhunt.deadfolk.get(i).getDisplayName().equals(player.getDisplayName())) {
+                        manhunt.players.remove(manhunt.deadfolk.get(i));
+                        manhunt.deadfolk.remove(i);
+                        manhunt.deadfolk.add(player);
+                        manhunt.players.add(player);
+                        player.getInventory().clear();
+                        player.setGameMode(GameMode.SPECTATOR);
+
+
+                    }
+                }
+
+                for (int i = 0 ; i < manhunt.hunters.size() ; i ++ ) {
+                    if (manhunt.hunters.get(i).getDisplayName().equals(player.getDisplayName())) {
+                        manhunt.players.remove(manhunt.hunters.get(i));
+                        manhunt.hunters.remove(i);
+                        manhunt.hunters.add(player);
+                        manhunt.players.add(player);
+
+                    }
+                }
+
+
+            } else if (manager.getGame() == 1) {
+
+
+                for (int i = 0 ; i < blockhunt.deadfolk.size() ; i ++ ) {
+                    if (blockhunt.deadfolk.get(i).getDisplayName().equals(player.getDisplayName())) {
+                        blockhunt.players.remove(blockhunt.deadfolk.get(i));
+                        blockhunt.deadfolk.remove(i);
+                        blockhunt.deadfolk.add(player);
+                        blockhunt.players.add(player);
+                        player.getInventory().clear();
+                        player.setGameMode(GameMode.SPECTATOR);
+
+
+                    }
+                }
+
+
+
+
+
+
+
+                for (int i = 0 ; i < blockhunt.playerlist.size() ; i ++ ) {
+                    if (blockhunt.playerlist.get(i).player.getDisplayName().equals(player.getDisplayName())) {
+                        blockhunt.players.remove(blockhunt.playerlist.get(i).player);
+                        blockhunt.playerlist.get(i).player = player;
+                        blockhunt.players.add(player);
+                        player.sendMessage(ChatColor.AQUA + "Welcome back! Your current block is: " + blockhunt.playerlist.get(i).block);
+                    }
+                }
+
+
+
+
+
+
+            } else if (manager.getGame() == 3) {
+
+
+                for (int i = 0 ; i < deathswap.playerlist.size() ; i ++ ) {
+                    if (deathswap.playerlist.get(i).player.getDisplayName().equals(player.getDisplayName())) {
+                        deathswap.players.remove(deathswap.playerlist.get(i).player);
+                        deathswap.playerlist.get(i).player = player;
+                        deathswap.players.add(player);
+                    }
+                }
+
+                for (int i = 0 ; i < deathswap.deadfolk.size() ; i ++ ) {
+                    if (deathswap.deadfolk.get(i).getDisplayName().equals(player.getDisplayName())) {
+                        deathswap.players.remove(deathswap.deadfolk.get(i));
+                        deathswap.deadfolk.remove(i);
+                        deathswap.deadfolk.add(player);
+                        deathswap.players.add(player);
+                        player.getInventory().clear();
+                        player.setGameMode(GameMode.SPECTATOR);
+
+
+                    }
+                }
+
+
+            }
+
 
     }
 
@@ -80,28 +212,34 @@ public class GameListener implements Listener {
         BlockHunt blockhunt = new BlockHunt(main);
         DeathSwap deathswap = new DeathSwap(main);
 
+
         if (!(e.getPlayer() instanceof Player)) {return;}
         Player player = (Player) e.getPlayer();
 
         if (blockhunt.getGameState() == GameState.ACTIVE && blockhunt.getGame() == 1) {
-            for (int i = 0 ; i < blockhunt.players.size() ; i++) {
-                if (blockhunt.playerlist.get(i).player == player) {
-                    restoreInventory(player);
+            blockhunt.playerlist.forEach((temp) -> {
+                if (temp.player == player) {
+                    if (blockhunt.keepinventory) {
+                        restoreInventory(player);
+                    }
+                    e.setRespawnLocation(temp.spawnpoint);
                 }
-
-            }
-
-
+            });
 
         }
 
         if (deathswap.getGameState() == GameState.ACTIVE && deathswap.getGame() == 3) {
-            for (int i = 0 ; i < deathswap.players.size() ; i++) {
-                if (deathswap.playerlist.get(i).player == player) {
-                    restoreInventory(player);
-                }
+            deathswap.playerlist.forEach((temp) -> {
+                if (temp.player == player) {
+                    if (deathswap.keepinventory) {
+                        restoreInventory(player);
+                    }
+                    e.setRespawnLocation(temp.spawnpoint);
 
-            }
+
+                }
+            });
+
 
         }
 
@@ -134,25 +272,37 @@ public class GameListener implements Listener {
         //code for blocckhunt deaths
         if (deathswap.getGameState() == GameState.ACTIVE && deathswap.getGame() == 3) {
 
-            if (deathswap.players.contains(player)) {
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + "" + ChatColor.GOLD + " has been eliminated!");
-                deathswap.playerElim(player);
-                deathswap.isWon();
+            deathswap.playerlist.forEach((temp) -> {
+                if (temp.player == player) {
 
-            }
+                    if (deathswap.keepinventory) {
+                        saveInventory(player);
+                        e.getDrops().clear();
+                    }
 
-            if (deathswap.players.contains(player) && deathswap.keepinventory == true) {
-                saveInventory(player);
-            }
+                    deathswap.playerElim(temp);
+                    deathswap.isWon();
+                }
+            });
+
+
+
 
 
         }
 
         if (blockhunt.getGameState() == GameState.ACTIVE && blockhunt.getGame() == 1) {
 
-            if (blockhunt.players.contains(player) && blockhunt.keepinventory == true) {
-                saveInventory(player);
-            }
+            blockhunt.playerlist.forEach((temp) -> {
+                if (temp.player == player) {
+
+                    if (blockhunt.keepinventory) {
+                        saveInventory(player);
+                        e.getDrops().clear();
+                    }
+
+                }
+            });
 
         }
 
@@ -163,31 +313,22 @@ public class GameListener implements Listener {
 
                 if (manhunt.hunters.contains(player) && manhunt.hunterKeep == true) {
                     saveInventory(player);
-                } else if (!(manhunt.hunters.contains(player)) && !(manhunt.deadfolk.contains(player)) && manhunt.runnerKeep == true) {
-                    saveInventory(player);
+                    e.getDrops().clear();
                 }
 
-                if (!(manhunt.hunters.contains(player)) && !(manhunt.deadfolk.contains(player))) {
-                    Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The runner " + player.getDisplayName() + "" + ChatColor.GOLD + " has been killed!");
+                if (manhunt.isRunner(player)) {
+                    if (manhunt.runnerKeep == true) {
+                        saveInventory(player);
+                        if (manhunt.runnerLives(player) <= 0) {
 
-                    ManHuntPlayer runner;
-                    //getting the runner and finding the nuber of lives they have
-                    for (int i = 0 ; i < manhunt.runners.size(); i++)  {
-                        if (manhunt.runners.get(i).player == player) {
-                            manhunt.runners.get(i).lives -= 1;
-                            Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: They have " + manhunt.runners.get(i).lives + "" + ChatColor.GOLD + " lives remaining.");
-
-                            if (manhunt.runners.get(i).lives <= 0) {
-                                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + " has been eliminated from ManHunt!");
-                                manhunt.playerElim(player);
-                            }
-
+                        } else {
+                            e.getDrops().clear();
                         }
                     }
 
+                    manhunt.playerElim(player);
 
-
-                } else if (!(manhunt.deadfolk.contains(player))) {
+                }  else if (!(manhunt.deadfolk.contains(player))) {
                     for (int j = 0; j < player.getInventory().getSize() ; j++) {
                         ItemStack item = player.getInventory().getItem(j);
                         if (item != null) {
@@ -201,6 +342,8 @@ public class GameListener implements Listener {
                         }
                     }
                 }
+
+
             }
 
 
@@ -317,6 +460,41 @@ public class GameListener implements Listener {
 
         }
 
+        if (e.getClickedInventory().getHolder() instanceof ManhuntCompassType) {
+            e.setCancelled(true);
+
+            Player player = (Player) e.getWhoClicked();
+
+            //Checking what the player clicked on
+            if (e.getCurrentItem().getType() == Material.WHITE_STAINED_GLASS_PANE || e.getCurrentItem().getType() == Material.YELLOW_STAINED_GLASS_PANE) {
+                //outputting the choice to the player
+                player.sendMessage(ChatColor.RED + "This is not an option");
+            } else if (e.getCurrentItem().getType() == Material.COMPASS) {
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The compass will track the nearest player to the hunter.");
+                manhunt.trackindividuals = false;
+                player.closeInventory();
+                HunterSelection gui = new HunterSelection(main);
+                player.openInventory(gui.getInventory());
+
+            }  else if (e.getCurrentItem().getType() == Material.MAP) {
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Hunters will be able to choose the runner they track.");
+                manhunt.trackindividuals = true;
+                player.closeInventory();
+                HunterSelection gui = new HunterSelection(main);
+                player.openInventory(gui.getInventory());
+            } else if (e.getCurrentItem().getType() == Material.BARRIER) {
+                //outputting the choice to the player
+                player.sendMessage(ChatColor.GREEN + "Canceled option selection!");
+                manhunt.hunters.clear();
+                manhunt.lives = 0;
+                manhunt.limit = 0;
+                player.closeInventory();
+            }
+
+
+
+        }
+
 
         if (e.getClickedInventory().getHolder() instanceof LifeSelection) {
             e.setCancelled(true);
@@ -416,14 +594,14 @@ public class GameListener implements Listener {
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Runners will lose their inventory on death.");
                 manhunt.runnerKeep = false;
                 player.closeInventory();
-                HunterSelection gui = new HunterSelection(main);
+                ManhuntCompassType gui = new ManhuntCompassType(main);
                 player.openInventory(gui.getInventory());
 
             }  else if (e.getCurrentItem().getType() == Material.GREEN_STAINED_GLASS) {
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Runners will keep their inventory on death.");
                 manhunt.runnerKeep = true;
                 player.closeInventory();
-                HunterSelection gui = new HunterSelection(main);
+                ManhuntCompassType gui = new ManhuntCompassType(main);
                 player.openInventory(gui.getInventory());
             } else if (e.getCurrentItem().getType() == Material.BARRIER) {
                 //outputting the choice to the player
@@ -483,8 +661,8 @@ public class GameListener implements Listener {
                 //outputting the choice to the player
                 player.sendMessage(ChatColor.RED + "This is not an option");
             } else if (e.getCurrentItem().getType() == Material.GREEN_WOOL) {
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: There will be 10 blocks between each difficulty change.");
-                blockhunt.difficulty = 10;
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: There will be 20 blocks between each difficulty change.");
+                blockhunt.difficulty = 20;
                 player.closeInventory();
                 BlockHuntLifeSelection gui = new BlockHuntLifeSelection(main);
                 player.openInventory(gui.getInventory());
@@ -496,8 +674,8 @@ public class GameListener implements Listener {
                 BlockHuntLifeSelection gui = new BlockHuntLifeSelection(main);
                 player.openInventory(gui.getInventory());
             }else if (e.getCurrentItem().getType() == Material.RED_WOOL) {
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: There will be 20 blocks between each difficulty change.");
-                blockhunt.difficulty = 20;
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: There will be 10 blocks between each difficulty change.");
+                blockhunt.difficulty = 10;
                 player.closeInventory();
                 BlockHuntLifeSelection gui = new BlockHuntLifeSelection(main);
                 player.openInventory(gui.getInventory());
@@ -636,14 +814,17 @@ public class GameListener implements Listener {
                 player.sendMessage(ChatColor.RED + "This is not an option");
             } else if (e.getCurrentItem().getType() == Material.DAYLIGHT_DETECTOR) {
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The time given to find the blocks will not change.");
+
                 blockhunt.speed = false;
                 player.closeInventory();
-                blockhunt.setGameState(GameState.STARTING);
+                BlockHuntSameBlocks gui = new BlockHuntSameBlocks(main);
+                player.openInventory(gui.getInventory());
             }  else if (e.getCurrentItem().getType() == Material.CLOCK) {
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The time given to find the blocks will slowly decrease.");
                 blockhunt.speed = true;
                 player.closeInventory();
-                blockhunt.setGameState(GameState.STARTING);
+                BlockHuntSameBlocks gui = new BlockHuntSameBlocks(main);
+                player.openInventory(gui.getInventory());
             } else if (e.getCurrentItem().getType() == Material.BARRIER) {
                 //outputting the choice to the player
                 player.sendMessage(ChatColor.GREEN + "Canceled option selection!");
@@ -724,6 +905,7 @@ public class GameListener implements Listener {
                 player.sendMessage(ChatColor.GREEN + "Canceled option selection!");
                 manswap.lives = 0;
                 manswap.keepinventory = false;
+                manswap.dimensions = true;
                 player.closeInventory();
             }
 
@@ -744,14 +926,13 @@ public class GameListener implements Listener {
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Players will not be distributed when the game starts.");
                 manswap.teleport = false;
                 player.closeInventory();
-                DeathSwapSpeedMode gui = new DeathSwapSpeedMode(main);
+                DeathSwapBanDimensions gui = new DeathSwapBanDimensions(main);
                 player.openInventory(gui.getInventory());
-
             }  else if (e.getCurrentItem().getType() == Material.GREEN_STAINED_GLASS) {
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Players will be distributed when the game starts.");
                 manswap.teleport = true;
                 player.closeInventory();
-                DeathSwapSpeedMode gui = new DeathSwapSpeedMode(main);
+                DeathSwapBanDimensions gui = new DeathSwapBanDimensions(main);
                 player.openInventory(gui.getInventory());
             } else if (e.getCurrentItem().getType() == Material.BARRIER) {
                 //outputting the choice to the player
@@ -759,6 +940,7 @@ public class GameListener implements Listener {
                 manswap.lives = 0;
                 manswap.keepinventory = false;
                 manswap.teleport = false;
+                manswap.dimensions = true;
                 player.closeInventory();
             }
 
@@ -766,7 +948,9 @@ public class GameListener implements Listener {
 
         }
 
-        if (e.getClickedInventory().getHolder() instanceof DeathSwapSpeedMode) {
+
+
+        if (e.getClickedInventory().getHolder() instanceof BlockHuntSameBlocks) {
             e.setCancelled(true);
 
             Player player = (Player) e.getWhoClicked();
@@ -775,16 +959,51 @@ public class GameListener implements Listener {
             if (e.getCurrentItem().getType() == Material.WHITE_STAINED_GLASS_PANE || e.getCurrentItem().getType() == Material.YELLOW_STAINED_GLASS_PANE) {
                 //outputting the choice to the player
                 player.sendMessage(ChatColor.RED + "This is not an option");
-            } else if (e.getCurrentItem().getType() == Material.GRASS_BLOCK) {
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The time given to find the blocks will not change.");
-                manswap.speed = false;
+            } else if (e.getCurrentItem().getType() == Material.FIREWORK_ROCKET) {
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: All players will be given different blocks to find.");
+                blockhunt.sameblock = false;
                 player.closeInventory();
-                manswap.setGameState(GameState.STARTING);
-            }  else if (e.getCurrentItem().getType() == Material.RABBIT_FOOT) {
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The time given to find the blocks will slowly decrease.");
-                manswap.speed = true;
+                blockhunt.setState(GameState.STARTING);
+            }  else if (e.getCurrentItem().getType() == Material.FIREWORK_STAR) {
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: All players will be given the same blocks to find.");
+                blockhunt.sameblock = true;
                 player.closeInventory();
-                manswap.setGameState(GameState.STARTING);
+                blockhunt.setState(GameState.STARTING);
+            } else if (e.getCurrentItem().getType() == Material.BARRIER) {
+                //outputting the choice to the player
+                player.sendMessage(ChatColor.GREEN + "Canceled option selection!");
+
+                blockhunt.lives = 0;
+                blockhunt.keepinventory = false;
+                blockhunt.teleport = false;
+                blockhunt.speed = false;
+                blockhunt.sameblock = false;
+                player.closeInventory();
+            }
+
+
+
+        }
+
+        if (e.getClickedInventory().getHolder() instanceof DeathSwapBanDimensions) {
+            e.setCancelled(true);
+
+            Player player = (Player) e.getWhoClicked();
+
+            //Checking what the player clicked on
+            if (e.getCurrentItem().getType() == Material.WHITE_STAINED_GLASS_PANE || e.getCurrentItem().getType() == Material.YELLOW_STAINED_GLASS_PANE) {
+                //outputting the choice to the player
+                player.sendMessage(ChatColor.RED + "This is not an option");
+            } else if (e.getCurrentItem().getType() == Material.BEDROCK) {
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Players will not be allowed access to the Dimensions.");
+                manswap.dimensions = false;
+                player.closeInventory();
+                manswap.setState(GameState.STARTING);
+            }  else if (e.getCurrentItem().getType() == Material.NETHERRACK) {
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Players will be allowed to enter the Dimensions.");
+                manswap.dimensions = true;
+                player.closeInventory();
+                manswap.setState(GameState.STARTING);
             } else if (e.getCurrentItem().getType() == Material.BARRIER) {
                 //outputting the choice to the player
                 player.sendMessage(ChatColor.GREEN + "Canceled option selection!");
@@ -792,7 +1011,7 @@ public class GameListener implements Listener {
                 manswap.lives = 0;
                 manswap.keepinventory = false;
                 manswap.teleport = false;
-                manswap.speed = false;
+                manswap.dimensions = true;
                 player.closeInventory();
             }
 
@@ -803,6 +1022,21 @@ public class GameListener implements Listener {
 
 
     }
+
+    //This event detects when the player enters a new dimension
+    @EventHandler
+    public void onDimensionChange(PortalCreateEvent e) {
+        //instance of deathswap to refer to it's methods
+        DeathSwap manswap = new DeathSwap(main);
+
+
+        if (manswap.dimensions == false) {
+            e.setCancelled(true);
+        }
+
+
+    }
+
 
     public void saveInventory(Player player) {
         File f = new File(main.getDataFolder().getAbsolutePath(), player.getName() + ".yml");

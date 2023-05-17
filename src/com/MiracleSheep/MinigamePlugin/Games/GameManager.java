@@ -28,10 +28,13 @@ public class GameManager {
     private static int Game = 0;
 
     //creating a player that is the host
-    private static Player startPlayer;
+    public static Player startPlayer;
 
     //This holds the name of the game
     private static String gameName = "None";
+
+    //this variable determines whether damage should be taken
+    public static boolean damage = true;
 
     //constructor
     public GameManager(MinigamePlugin main) {
@@ -137,8 +140,8 @@ public class GameManager {
 
 
     //function that checks if the game is won
-    public void isWon() {
-
+    public boolean isWon() {
+        return false;
     }
 
 
@@ -149,11 +152,38 @@ public class GameManager {
         setStartPlayer(null);
     }
 
+    public boolean online() {
+        for (int i = 0 ; i < players.size() ; i ++ ) {
+            if (!players.get(i).isOnline()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean anyonline() {
+        for (int i = 0 ; i < players.size() ; i ++ ) {
+            if (players.get(i).isOnline()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean anyonlinebutplayer(Player player) {
+        for (int i = 0 ; i < players.size() ; i ++ ) {
+            if (players.get(i).isOnline() && players.get(i) != player) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     //method to add a player to the array and record how many players there are
     public void addPlayer(Player player) {
 
         players.add(player);
-        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + "" + ChatColor.GOLD + " Has joined " + getName() + "!");
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + "" + ChatColor.GOLD + " has joined " + getName() + "!");
         Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Players in queue: " + players.size());
         if (players.size() == 2) {
             startPlayer.sendMessage(ChatColor.AQUA + "Use the command /start to begin " + getName() + " when you are ready!");
@@ -194,32 +224,30 @@ public class GameManager {
 
     //method for when a player disconnects
     public void playerDisc(Player player) {
+        boolean is_anyone_online = anyonlinebutplayer(player);
 
-        removeplayer(player);
-        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + player.getDisplayName() + "" + ChatColor.GOLD + " has disconnected from " + getName() + "!");
-        Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: Players remaining: " + players.size());
-
-        if (player == startPlayer && players.size() != 0) {
-            players.get(0).sendMessage(ChatColor.AQUA + "You are the new game host!");
-            startPlayer = players.get(0);
-
-        }
-
-        if (players.size() == 1) {
-
-            if (gameState == GameState.ACTIVE) {
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + players.get(0).getDisplayName() + "" + ChatColor.GOLD + " Wins the game!");
-                setState(GameState.INACTIVE);
-            } else if (gameState == GameState.WAITING) {
-                startPlayer.sendMessage(ChatColor.AQUA + "Use the command /cancel to cancel the minigame.");
-            }
-
-
-
-        } else if (players.size() == 0) {
+        if (!is_anyone_online) {
             Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: The game has been canceled!");
             setState(GameState.INACTIVE);
+        } else {
+
+            if (player == startPlayer && players.size() != 0) {
+
+
+                for (int i = 0 ; i < players.size() ; i ++) {
+                    if (players.get(i).isOnline() && players.get(i) != player) {
+
+                        players.get(i).sendMessage(ChatColor.AQUA + "You are the new game host!");
+                        startPlayer = players.get(i);
+                        i = players.size();
+                    }
+                }
+
+
+            }
+
         }
+
 
     }
 

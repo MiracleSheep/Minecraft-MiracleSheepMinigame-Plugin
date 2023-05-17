@@ -195,28 +195,43 @@ public class PluginCommands implements CommandExecutor {
                     if (manager.players.contains(player)) {
 
                         if (manager.getGame() != 0 && manager.getGameState() == GameState.WAITING) {
+
+
+
                             player.sendMessage(ChatColor.GREEN + "Starting " + manager.getName() + "...");
-                            if (manager.getGame() == 1) {
-                                BlockHuntDifficultySelection gui = new BlockHuntDifficultySelection(main);
-                                player.openInventory(gui.getInventory());
+
+                            if (manager.online()) {
+
+                                if (manager.getGame() == 1) {
+                                    BlockHuntDifficultySelection gui = new BlockHuntDifficultySelection(main);
+                                    player.openInventory(gui.getInventory());
 
 
-                            } else if (manager.getGame() == 2) {
-                                manhunt.hunters.clear();
-                                manhunt.hunterKeep = false;
-                                manhunt.runnerKeep = false;
-                                manhunt.lives = 0;
-                                manhunt.limit = 0;
-                                manhunt.runners.clear();
-                                manhunt.deadfolk.clear();
+                                } else if (manager.getGame() == 2) {
+                                    manhunt.hunters.clear();
+                                    manhunt.hunterKeep = false;
+                                    manhunt.runnerKeep = false;
+                                    manhunt.lives = 0;
+                                    manhunt.limit = 0;
+                                    manhunt.runners.clear();
+                                    manhunt.deadfolk.clear();
 
-                                LimitSelection gui = new LimitSelection(main);
-                                player.openInventory(gui.getInventory());
-                            } else if (manager.getGame() == 3) {
-                                manswap.setState(GameState.STARTING);
-                                //opening the menu to select hunters
+                                    LimitSelection gui = new LimitSelection(main);
+                                    player.openInventory(gui.getInventory());
+                                } else if (manager.getGame() == 3) {
+                                    //resetting all important variables
+                                    manswap.lives = 0;
+                                    manswap.dimensions = true;
+                                    manswap.keepinventory = false;
+                                    manswap.teleport = false;
 
 
+                                    DeathSwapLifeSelection gui = new DeathSwapLifeSelection(main);
+                                    player.openInventory(gui.getInventory());
+
+                                }
+                            } else {
+                                player.sendMessage(ChatColor.RED + "Not everyone is online!");
                             }
 
                         } else if (manager.getGameState() != GameState.WAITING) {
@@ -224,6 +239,7 @@ public class PluginCommands implements CommandExecutor {
                         } else {
                             player.sendMessage(ChatColor.RED + "There is no game currently active.");
                         }
+
 
                     } else {
                         player.sendMessage(ChatColor.RED + "You are not in a game! There is nothing to quit!");
@@ -274,6 +290,7 @@ public class PluginCommands implements CommandExecutor {
                     player.sendMessage(ChatColor.GREEN + "Cancelling " + manager.getName() + "...");
                     Bukkit.broadcastMessage(ChatColor.GOLD + "[Server]: " + manager.getStartPlayer().getDisplayName() + "" + ChatColor.GOLD + " has canceled " + manager.getName() + "!");
                     if (manager.getGame() == 1) {
+                        blockhunt.stopTimer(false);
                         blockhunt.setState(GameState.INACTIVE);
                     } else if (manager.getGame() == 2) {
                         manhunt.setState(GameState.INACTIVE);
