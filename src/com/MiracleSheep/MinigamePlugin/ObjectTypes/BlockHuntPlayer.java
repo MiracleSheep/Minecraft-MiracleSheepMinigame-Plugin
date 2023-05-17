@@ -6,6 +6,7 @@
 
 package com.MiracleSheep.MinigamePlugin.ObjectTypes;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class BlockHuntPlayer {
@@ -14,9 +15,16 @@ public class BlockHuntPlayer {
 
     public String block;
 
-    public BlockHuntPlayer(Player player, String block) {
+    public int lives;
+
+    public boolean found = false;
+
+    public Location spawnpoint;
+
+    public BlockHuntPlayer(Player player, String block, int lives) {
         this.player = player;
         this.block = block;
+        this.lives = lives;
     }
 
 }

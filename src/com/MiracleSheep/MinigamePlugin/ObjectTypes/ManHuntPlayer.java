@@ -6,6 +6,7 @@
 
 package com.MiracleSheep.MinigamePlugin.ObjectTypes;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class ManHuntPlayer {
@@ -13,6 +14,10 @@ public class ManHuntPlayer {
     public Player player;
 
     public int lives;
+
+    public boolean lost_a_life = false;
+    public Location disconnect_location;
+
 
     public ManHuntPlayer(Player player, int lives) {
         this.player = player;

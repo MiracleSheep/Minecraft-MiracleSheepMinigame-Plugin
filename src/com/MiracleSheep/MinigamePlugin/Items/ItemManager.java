@@ -53,26 +53,70 @@ public class ItemManager {
         lore.add("§3Right click this to point to the current coordinates of the player");
         meta.setLore(lore);
         //adding enchantments
-        meta.addEnchant(Enchantment.LUCK, 10, true);
+        meta.addEnchant(Enchantment.LUCK, 1, true);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+
 
         //this part of the code checks all the locations of the runners and the hunter requesting, and then gets the closest player
         //setting the initial location to the first player in the runner list
-
-        Location closestLocation = manhunt.runners.get(0).player.getLocation();
         Location hunterLocation = hunter.getLocation();
-        Player closestPlayer = manhunt.runners.get(0).player;
-        double closestDist;
+        double closestDist = 0;
+        Location closestLocation = manhunt.spawn;
+        int initial = 0;
 
-        for (int i = 0; i < manhunt.runners.size(); i++)  {
-            closestDist = closestLocation.distance(hunterLocation);
+        if (manhunt.trackindividuals) {
 
-            if (manhunt.runners.get(i).player.getLocation().distance(hunterLocation) < closestDist) {
-                closestDist = manhunt.runners.get(i).player.getLocation().distance(hunterLocation);
-                closestPlayer =  manhunt.runners.get(i).player;
-                closestLocation = manhunt.runners.get(i).player.getLocation();
+            int current_enchant_level = meta.getEnchantLevel(Enchantment.LUCK);
+            if (manhunt.runners.get(current_enchant_level - 1).player.isOnline()) {
+                closestLocation = manhunt.runners.get(current_enchant_level - 1).player.getLocation();
+            } else {
+                closestLocation = manhunt.runners.get(current_enchant_level - 1).disconnect_location;
+            }
+
+
+        } else {
+
+
+
+
+            //this list will contain all locations that are valid
+            ArrayList<Location> valid_locations = new ArrayList<Location>();
+
+            for (int n = 0 ; n < manhunt.runners.size() ; n++) {
+                if (manhunt.runners.get(n).player.isOnline()) {
+                    valid_locations.add(manhunt.runners.get(n).player.getLocation());
+                } else {
+                    valid_locations.add(manhunt.runners.get(n).disconnect_location);
+                }
+            }
+
+
+            for (int z = 0 ; z < valid_locations.size() ; z++) {
+
+                if (valid_locations.get(z).getWorld().getEnvironment() == hunter.getWorld().getEnvironment()) {
+                    closestLocation = valid_locations.get(z);
+                    closestDist = hunterLocation.distance(closestLocation);
+                }
+            }
+
+            for (int i = 0; i < valid_locations.size(); i++)  {
+
+                if (valid_locations.get(i).getWorld().getEnvironment() == hunter.getWorld().getEnvironment()) {
+
+                    if (valid_locations.get(i).distance(hunterLocation) < closestDist) {
+
+                        closestDist = valid_locations.get(i).distance(hunterLocation);
+                        closestLocation = valid_locations.get(i);
+
+                    }
+
+                }
+
+
 
             }
+
+
         }
 
         closestLocation.setY(0);
@@ -84,44 +128,6 @@ public class ItemManager {
         item.setItemMeta(meta);
         //setting the class variable testitem to the item in this function
         tracker = item;
-
-        if (ManHunt.limit == 2) {
-            if (closestLocation.distance(hunterLocation) > main.getConfig().getInt("ManhuntTeleportDistance")) {
-
-                if (hunter.getWorld().getEnvironment().equals(World.Environment.NETHER)) {
-                    hunter.teleport(closestLocation.add(main.getConfig().getInt("ManhuntTeleportDistance"),0,0));
-                    boolean issafe = false;
-                    Location loc = hunter.getLocation();
-                    while (!issafe) {
-
-                    for (int j = 3 ; j < 125 ; j++) {
-
-                        if (!issafe) {
-                            loc.setY(j);
-                            if (loc.subtract(0, 1, 0).getBlock().getType().isSolid() && loc.getBlock().getType().isAir() && loc.add(0,1,0).getBlock().getType().isAir()) {
-                                issafe = true;
-                            }
-
-
-
-                        }
-
-                    }
-                        if (!issafe) {
-                            loc.add(1,0,0);
-                        }
-
-                    }
-                    hunter.teleport(loc);
-
-                } else {
-                hunter.teleport(closestLocation.add(main.getConfig().getInt("ManhuntTeleportDistance"),0,0));
-                Location loc = hunter.getLocation();
-                loc.setY(hunter.getWorld().getHighestBlockAt( hunter.getLocation().getBlockX(), hunter.getLocation().getBlockZ()).getY() + 1);
-                hunter.teleport(loc);
-                }
-            }
-        }
 
 
 
